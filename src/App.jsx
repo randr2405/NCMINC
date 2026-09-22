@@ -12,6 +12,7 @@ import PayrollHRServices from './pages/PayrollHRServices'
 import FiduciaryTrustServices from './pages/FiduciaryTrustServices'
 import BBBEEServices from './pages/BBBEEServices'
 import BusinessAdvisoryServices from './pages/BusinessAdvisoryServices'
+import Careers from './pages/Careers'
 import Contact from './pages/Contact'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/fiduciary-trust-services" element={<FiduciaryTrustServices />} />
         <Route path="/bbbee-services" element={<BBBEEServices />} />
         <Route path="/business-advisory-services" element={<BusinessAdvisoryServices />} />
+        <Route path="/careers" element={<Careers />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />

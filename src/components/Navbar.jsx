@@ -49,7 +49,7 @@ export default function Navbar() {
     >
       <div
         className={
-          'flex items-center justify-between px-8 max-w-6xl mx-auto transition-all duration-300 ' +
+          'flex items-center justify-between px-4 sm:px-8 max-w-6xl mx-auto transition-all duration-300 ' +
           (scrolled ? 'py-3' : 'py-4')
         }
       >
@@ -129,6 +129,18 @@ export default function Navbar() {
           </div>
 
           <Link
+            to="/careers"
+            className="group/link relative py-1"
+            style={{ color: 'var(--ncm-black)' }}
+          >
+            Careers
+            <span
+              className="absolute left-0 -bottom-1 h-[2px] w-0 transition-all duration-300 group-hover/link:w-full"
+              style={{ backgroundColor: 'var(--ncm-red)' }}
+            />
+          </Link>
+
+          <Link
             to="/contact"
             className="px-5 py-2 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
             style={{ backgroundColor: 'var(--ncm-red)' }}
@@ -167,7 +179,7 @@ export default function Navbar() {
         }
         style={{ borderColor: 'var(--ncm-silver)' }}
       >
-        <div className="px-8 py-4 flex flex-col gap-3">
+        <div className="px-4 sm:px-8 py-4 flex flex-col gap-3">
           <Link to="/about-us" onClick={() => setMobileOpen(false)} style={{ color: 'var(--ncm-black)' }}>
             About Us
           </Link>
@@ -190,6 +202,13 @@ export default function Navbar() {
               ))}
             </div>
           </details>
+          <Link
+            to="/careers"
+            onClick={() => setMobileOpen(false)}
+            style={{ color: 'var(--ncm-black)' }}
+          >
+            Careers
+          </Link>
           <Link
             to="/contact"
             onClick={() => setMobileOpen(false)}
