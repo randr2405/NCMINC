@@ -111,7 +111,7 @@ export default function Contact() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">Email</label>
                 <input
