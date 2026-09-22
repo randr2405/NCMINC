@@ -310,24 +310,7 @@ export default function Home() {
         </Reveal>
       </section>
 
-      {/* Contact strip */}
-      <section className="px-6 sm:px-8 py-14 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
-        <Reveal as="h2" className="text-2xl font-bold mb-2" style={{ color: 'var(--ncm-black)' }}>
-          Get in Touch
-        </Reveal>
-        <Reveal delay={60} className="text-gray-600 mb-8">
-          Durban, Umhlanga, Ballito and Richards Bay
-        </Reveal>
-        <Reveal delay={120} className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-gray-700 text-sm">
-          <span>📞 062 830 3044</span>
-          <span>💬 083 333 9349</span>
-          <span>✉️ admin@ncmca.co.za</span>
-          <span>🌐 www.ncmca.co.za</span>
-        </Reveal>
-        <Reveal delay={180} className="mt-8 italic text-gray-500">
-          Delivering Excellence Through Integrity, Insight and Innovation.
-        </Reveal>
-      </section>
+
     </div>
   )
 }
