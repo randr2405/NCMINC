@@ -1,14 +1,31 @@
 ﻿import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 
-/** Fires `visible = true` once the element scrolls into view, then stops watching. */
-function useReveal(threshold = 0.15) {
+/** Fires `visible = true` once the element scrolls into view, then stops watching.
+ *  Falls back to visible=true immediately if IntersectionObserver isn't available,
+ *  or if the element is already on screen when it mounts, so content can never
+ *  get stuck invisible. */
+function useReveal(threshold = 0.1) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true)
+      return
+    }
+
+    // Already in (or close to) the viewport on mount — show it immediately
+    // instead of waiting for a scroll event that may never come.
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true)
+      return
+    }
+
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -16,7 +33,7 @@ function useReveal(threshold = 0.15) {
           obs.disconnect()
         }
       },
-      { threshold }
+      { threshold, rootMargin: '0px 0px -5% 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -27,7 +44,7 @@ function useReveal(threshold = 0.15) {
 
 /** Counts up from 0 to `end` once it scrolls into view. */
 function Counter({ end, suffix = '', duration = 1400 }) {
-  const [ref, visible] = useReveal(0.6)
+  const [ref, visible] = useReveal(0.3)
   const [value, setValue] = useState(0)
 
   useEffect(() => {
