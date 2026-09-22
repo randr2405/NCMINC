@@ -1,27 +1,31 @@
 ﻿import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 
-export default function Footer() {
-  const services = [
-    { name: 'Audit & Assurance', path: '/audit-assurance-services' },
-    { name: 'Accounting & Financial Reporting', path: '/accounting-financial-reporting' },
-    { name: 'Tax Services', path: '/tax-services' },
-    { name: 'Business Advisory', path: '/business-advisory-services' },
-    { name: 'Company Secretarial Services', path: '/company-secretarial-services' },
-    { name: 'Payroll & HR Services', path: '/payroll-hr-services' },
-    { name: 'Fiduciary & Trust Services', path: '/fiduciary-trust-services' },
-    { name: 'B-BBEE Advisory', path: '/bbbee-services' },
-    { name: 'Business Process Outsourcing', path: '/business-process-outsourcing' },
-  ]
-
-  const year = new Date().getFullYear()
-  const footerRef = useRef(null)
+/** Fires `visible = true` once the element scrolls into view, then stops watching.
+ *  Falls back to visible=true immediately if IntersectionObserver isn't available,
+ *  or if the element is already on screen when it mounts, so content can never
+ *  get stuck invisible. */
+function useReveal(threshold = 0.1) {
+  const ref = useRef(null)
   const [visible, setVisible] = useState(false)
-  const [showTop, setShowTop] = useState(false)
 
   useEffect(() => {
-    const el = footerRef.current
+    const el = ref.current
     if (!el) return
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true)
+      return
+    }
+
+    // Already in (or close to) the viewport on mount — show it immediately
+    // instead of waiting for a scroll event that may never come.
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setVisible(true)
+      return
+    }
+
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,148 +33,301 @@ export default function Footer() {
           obs.disconnect()
         }
       },
-      { threshold: 0.15 }
+      { threshold, rootMargin: '0px 0px -5% 0px' }
     )
     obs.observe(el)
     return () => obs.disconnect()
-  }, [])
+  }, [threshold])
+
+  return [ref, visible]
+}
+
+/** Counts up from 0 to `end` once it scrolls into view. */
+function Counter({ end, suffix = '', duration = 1400 }) {
+  const [ref, visible] = useReveal(0.3)
+  const [value, setValue] = useState(0)
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 600)
-    onScroll()
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
-
-  const colClass =
-    'transition-all duration-700 ease-out ' +
-    'motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0'
+    if (!visible) return
+    const start = performance.now()
+    let frame
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(end * eased))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [visible, end, duration])
 
   return (
-    <footer ref={footerRef} className="relative text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
-      {/* thin accent line at the very top of the footer */}
-      <div className="h-[3px] w-full" style={{ backgroundColor: 'var(--ncm-red)' }} />
+    <span ref={ref}>
+      {value}
+      {suffix}
+    </span>
+  )
+}
 
-      <div className="px-8 py-14 max-w-6xl mx-auto grid md:grid-cols-4 gap-10 text-left">
-        {/* Brand */}
-        <div
-          className={colClass}
-          style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '0ms' }}
-        >
-          <h3 className="text-xl font-bold mb-2">
-            NCM <span style={{ color: 'var(--ncm-red)' }}>INC</span>
-          </h3>
-          <p className="text-sm text-gray-400 mb-4">
-            Chartered Accountants (SA) &amp; Registered Auditors
-          </p>
-          <p className="text-sm italic text-gray-400">
-            Delivering Excellence Through Integrity, Insight and Innovation.
-          </p>
-        </div>
+function Reveal({ as: Tag = 'div', delay = 0, className = '', style = {}, children }) {
+  const [ref, visible] = useReveal()
+  return (
+    <Tag
+      ref={ref}
+      className={
+        'transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:translate-y-0 ' +
+        className
+      }
+      style={{
+        ...style,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'none' : 'translateY(20px)',
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      {children}
+    </Tag>
+  )
+}
 
-        {/* Quick links */}
-        <div
-          className={colClass}
-          style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '80ms' }}
-        >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Quick Links</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li>
-              <Link to="/" className="inline-block transition-all duration-200 hover:text-white hover:translate-x-1">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/about-us" className="inline-block transition-all duration-200 hover:text-white hover:translate-x-1">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="inline-block transition-all duration-200 hover:text-white hover:translate-x-1">
-                Contact
-              </Link>
-            </li>
-          </ul>
-        </div>
+export default function Home() {
+  const [heroIn, setHeroIn] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setHeroIn(true), 60)
+    return () => clearTimeout(t)
+  }, [])
 
-        {/* Services */}
-        <div
-          className={colClass}
-          style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '160ms' }}
-        >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Our Services</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            {services.map((s) => (
-              <li key={s.path}>
-                <Link
-                  to={s.path}
-                  className="inline-block transition-all duration-200 hover:text-white hover:translate-x-1"
-                >
-                  {s.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+  const services = [
+    {
+      title: 'Audit & Assurance',
+      path: '/audit-assurance-services',
+      items: ['Statutory Audits', 'External Audits', 'Internal Audits', 'Independent Reviews', 'Due Diligence Reviews'],
+    },
+    {
+      title: 'Accounting & Financial Reporting',
+      path: '/accounting-financial-reporting',
+      items: ['Monthly Bookkeeping', 'Management Accounts', 'Annual Financial Statements', 'IFRS / IFRS for SMEs Compliance', 'Cash Flow Management'],
+    },
+    {
+      title: 'Tax Services',
+      path: '/tax-services',
+      items: ['Corporate & Individual Income Tax', 'VAT Registration and Compliance', 'PAYE, UIF and SDL Compliance', 'Tax Planning and Advisory', 'SARS Objections and Appeals'],
+    },
+    {
+      title: 'Business Advisory',
+      path: '/business-advisory-services',
+      items: ['Business Consulting', 'Strategic Planning', 'Financial Modelling', 'Business Valuations', 'Mergers and Acquisitions Support'],
+    },
+    {
+      title: 'Company Secretarial Services',
+      path: '/company-secretarial-services',
+      items: ['Company Registrations', 'CIPC Compliance', 'Annual Returns', 'Share Allotments and Transfers', 'Beneficial Ownership Compliance'],
+    },
+    {
+      title: 'Payroll & HR Services',
+      path: '/payroll-hr-services',
+      items: ['Payroll Processing', 'EMP201 and EMP501 Submissions', 'UIF Administration', 'IRP5 Certificates', 'Employment Tax Advisory'],
+    },
+    {
+      title: 'Fiduciary & Trust Services',
+      path: '/fiduciary-trust-services',
+      items: ['Trust Formation and Administration', 'Estate Planning', 'Deceased Estate Administration', 'Trustee Services', 'Succession Planning'],
+    },
+    {
+      title: 'B-BBEE Advisory',
+      path: '/bbbee-services',
+      items: ['B-BBEE Verification Preparation', 'Scorecard Assessments', 'Ownership Structuring', 'Enterprise & Supplier Development', 'B-BBEE Compliance Consulting'],
+    },
+    {
+      title: 'Business Process Outsourcing',
+      path: '/business-process-outsourcing',
+      items: ['Outsourced Accounting', 'Virtual CFO Services', 'Financial Controller Services', 'Finance Department Outsourcing', 'Management Reporting'],
+    },
+  ]
 
-        {/* Contact */}
-        <div
-          className={colClass}
-          style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '240ms' }}
-        >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Get in Touch</h4>
-          <ul className="space-y-3 text-sm text-gray-400">
-            <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>📞</span> 062 830 3044
-            </li>
-            <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>💬</span> 083 333 9349
-            </li>
-            <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>✉️</span>
-              <a href="mailto:admin@ncmca.co.za" className="hover:text-white transition-colors duration-200">
-                admin@ncmca.co.za
-              </a>
-            </li>
-            <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>🌐</span>
-              <a
-                href="https://www.ncmca.co.za"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-white transition-colors duration-200"
-              >
-                www.ncmca.co.za
-              </a>
-            </li>
-            <li className="flex items-start gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>📍</span>
-              <span>Durban, Umhlanga, Ballito &amp; Richards Bay</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t py-6 text-center text-xs text-gray-500" style={{ borderColor: '#2a2a2a' }}>
-        © {year} NCM Inc Chartered Accountants (SA) &amp; Registered Auditors. All rights reserved.
-      </div>
-
-      {/* Back to top */}
-      <button
-        onClick={scrollToTop}
-        aria-label="Back to top"
-        className={
-          'fixed bottom-6 right-6 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ' +
-          (showTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none')
-        }
-        style={{ backgroundColor: 'var(--ncm-red)' }}
+  return (
+    <div className="text-black overflow-x-hidden">
+      {/* Hero */}
+      <section
+        className="relative px-6 sm:px-8 py-20 sm:py-28 text-center text-white overflow-hidden"
+        style={{ backgroundColor: 'var(--ncm-black)' }}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 13V3M8 3L3 8M8 3l5 5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-    </footer>
+        {/* subtle drifting accent glow, purely decorative */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full opacity-20 blur-3xl"
+          style={{ backgroundColor: 'var(--ncm-red)' }}
+        />
+
+        <div className="relative">
+          <p
+            className="uppercase tracking-widest text-xs sm:text-sm mb-4 transition-all duration-700 ease-out"
+            style={{
+              color: 'var(--ncm-silver)',
+              opacity: heroIn ? 1 : 0,
+              transform: heroIn ? 'none' : 'translateY(10px)',
+            }}
+          >
+            Chartered Accountants (SA) & Registered Auditors
+          </p>
+
+          <h1
+            className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 leading-tight transition-all duration-700 ease-out"
+            style={{
+              opacity: heroIn ? 1 : 0,
+              transform: heroIn ? 'none' : 'translateY(16px)',
+              transitionDelay: '100ms',
+            }}
+          >
+            Trusted Advice.{' '}
+            <span className="relative inline-block" style={{ color: 'var(--ncm-red)' }}>
+              Smart Solutions.
+              <span
+                className="absolute left-0 -bottom-1 h-[3px] rounded-full transition-all duration-[900ms] ease-out"
+                style={{
+                  backgroundColor: 'var(--ncm-red)',
+                  width: heroIn ? '100%' : '0%',
+                  transitionDelay: '550ms',
+                }}
+              />
+            </span>
+            <br />
+            Stronger Businesses.
+          </h1>
+
+          <p
+            className="max-w-2xl mx-auto mt-6 text-gray-300 text-base sm:text-lg transition-all duration-700 ease-out"
+            style={{
+              opacity: heroIn ? 1 : 0,
+              transform: heroIn ? 'none' : 'translateY(16px)',
+              transitionDelay: '220ms',
+            }}
+          >
+            We are a professional accounting and audit firm committed to delivering
+            exceptional service, value and integrity.
+          </p>
+
+          <div
+            className="mt-10 flex flex-col sm:flex-row justify-center gap-4 transition-all duration-700 ease-out"
+            style={{
+              opacity: heroIn ? 1 : 0,
+              transform: heroIn ? 'none' : 'translateY(16px)',
+              transitionDelay: '340ms',
+            }}
+          >
+            <Link
+              to="/contact"
+              className="px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+              style={{ backgroundColor: 'var(--ncm-red)' }}
+            >
+              Get in Touch
+            </Link>
+            <Link
+              to="/about-us"
+              className="px-6 py-3 rounded-md font-semibold border transition-colors duration-200 hover:bg-white/10"
+              style={{ borderColor: 'var(--ncm-silver)', color: 'var(--ncm-silver)' }}
+            >
+              Learn More About Us
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Intro strip */}
+      <section className="px-6 sm:px-8 py-14 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
+        <Reveal className="max-w-3xl mx-auto">
+          <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+            For{' '}
+            <span className="font-semibold" style={{ color: 'var(--ncm-black)' }}>
+              <Counter end={40} suffix="+" />
+            </span>{' '}
+            years, NCM Inc has served the South African business community with
+            professionalism, integrity and a commitment to excellence. Today, under new
+            management, we combine that heritage with modern technology and a client-focused
+            approach to professional services.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* Services grid */}
+      <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-red)' }}>
+          Our Professional Services
+        </Reveal>
+        <Reveal delay={80} className="text-center text-gray-600 mb-12">
+          An integrated range of professional services under one trusted roof.
+        </Reveal>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {services.map((s, i) => (
+            <Reveal key={s.path} delay={(i % 3) * 90} className="h-full">
+              <Link
+                to={s.path}
+                className="group flex flex-col h-full p-6 rounded-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                style={{ borderColor: 'var(--ncm-silver)' }}
+              >
+                <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--ncm-black)' }}>
+                  {s.title}
+                </h3>
+                <ul className="text-sm text-gray-600 space-y-1 flex-1">
+                  {s.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <span style={{ color: 'var(--ncm-red)' }}>•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <span
+                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
+                  style={{ color: 'var(--ncm-red)' }}
+                >
+                  Learn more →
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Why NCM strip */}
+      <section className="px-6 sm:px-8 py-16 text-white text-center" style={{ backgroundColor: 'var(--ncm-black)' }}>
+        <Reveal as="h2" className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+          More Than Compliance. A Professional Partner.
+        </Reveal>
+        <Reveal delay={80} className="max-w-2xl mx-auto text-gray-300 mb-8 text-sm sm:text-base">
+          Businesses today require more than accountants who prepare financial statements
+          and tax returns — they require advisers who understand their challenges, identify
+          opportunities and help them make informed decisions.
+        </Reveal>
+        <Reveal delay={160}>
+          <Link
+            to="/about-us"
+            className="inline-block px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{ backgroundColor: 'var(--ncm-red)' }}
+          >
+            Why Choose NCM Inc
+          </Link>
+        </Reveal>
+      </section>
+
+      {/* Final CTA */}
+      <section className="px-6 sm:px-8 py-16 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
+        <Reveal as="h2" className="text-2xl font-bold mb-3" style={{ color: 'var(--ncm-black)' }}>
+          Ready to talk to an adviser?
+        </Reveal>
+        <Reveal delay={60} className="text-gray-600 mb-8 max-w-xl mx-auto">
+          Tell us a bit about your business and we'll point you to the right service.
+        </Reveal>
+        <Reveal delay={120}>
+          <Link
+            to="/contact"
+            className="inline-block px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+            style={{ backgroundColor: 'var(--ncm-red)' }}
+          >
+            Get in Touch
+          </Link>
+        </Reveal>
+      </section>
+    </div>
   )
 }
