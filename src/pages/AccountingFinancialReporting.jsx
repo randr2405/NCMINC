@@ -116,6 +116,19 @@ export default function AccountingFinancialReporting() {
           ],
         },
         {
+          title: 'Audit & Independent Review Preparation',
+          description: 'Proper preparation can significantly reduce audit costs and improve efficiency. We assist clients by:',
+          items: [
+            'Preparing audit-ready financial statements',
+            'Compiling supporting schedules',
+            'Reconciling accounts and balances',
+            'Addressing audit queries',
+            'Liaising with auditors',
+            'Reviewing internal controls',
+            'Identifying and correcting accounting discrepancies',
+          ],
+        },
+        {
           title: 'Cloud Accounting & Digital Financial Solutions',
           description: 'We support the implementation and management of cloud-based accounting systems, including:',
           items: [
