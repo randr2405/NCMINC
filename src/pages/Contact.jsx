@@ -1,4 +1,9 @@
 ﻿import { useState } from 'react'
+import emailjs from '@emailjs/browser'
+
+const EMAILJS_SERVICE_ID = 'service_hrlhqm6'
+const EMAILJS_TEMPLATE_ID = 'template_0c0a3vf'
+const EMAILJS_PUBLIC_KEY = '1UTJkjoUojZi_XgnG'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -18,25 +23,36 @@ export default function Contact() {
     e.preventDefault()
     setStatus('sending')
 
-    // TODO: Wire up EmailJS here, e.g.
-    // emailjs.send('SERVICE_ID', 'TEMPLATE_ID', formData, 'PUBLIC_KEY')
-    //   .then(() => {
-    //     setStatus('success')
-    //     setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-    //   })
-    //   .catch(() => setStatus('error'))
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+      time: new Date().toLocaleString('en-ZA', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    }
 
-    // Placeholder behaviour until EmailJS is connected:
-    setTimeout(() => {
-      setStatus('success')
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-    }, 800)
+    emailjs
+      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, {
+        publicKey: EMAILJS_PUBLIC_KEY,
+      })
+      .then(() => {
+        setStatus('success')
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err)
+        setStatus('error')
+      })
   }
 
   return (
     <div className="text-black">
       {/* Hero */}
-      <section className="px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
+      <section className="px-4 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
         <p className="text-gray-300 max-w-xl mx-auto">
           Have a question or need professional advice? Get in touch and our team will
@@ -44,7 +60,7 @@ export default function Contact() {
         </p>
       </section>
 
-      <section className="px-8 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
+      <section className="px-4 sm:px-8 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
         {/* Contact details */}
         <div>
           <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-red)' }}>Get in Touch</h2>
