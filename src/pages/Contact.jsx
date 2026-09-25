@@ -1,1 +1,3 @@
-﻿///leave blank
+﻿export default function Contact() {
+  
+}
