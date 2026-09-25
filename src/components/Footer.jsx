@@ -51,7 +51,7 @@ export default function Footer() {
   return (
     <footer ref={footerRef} className="relative text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
       {/* thin accent line at the very top of the footer */}
-      <div className="h-[3px] w-full" style={{ backgroundColor: 'var(--ncm-red)' }} />
+      <div className="h-[3px] w-full" style={{ backgroundColor: 'var(--ncm-teal)' }} />
 
       <div className="px-8 py-14 max-w-6xl mx-auto grid md:grid-cols-4 gap-10 text-left">
         {/* Brand */}
@@ -60,7 +60,7 @@ export default function Footer() {
           style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '0ms' }}
         >
           <h3 className="text-xl font-bold mb-2">
-            NCM <span style={{ color: 'var(--ncm-red)' }}>INC</span>
+            NCM <span style={{ color: 'var(--ncm-teal)' }}>INC</span>
           </h3>
           <p className="text-sm text-gray-400 mb-4">
             Chartered Accountants (SA) &amp; Registered Auditors
@@ -75,7 +75,7 @@ export default function Footer() {
           className={colClass}
           style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '80ms' }}
         >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Quick Links</h4>
+          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-grey)' }}>Quick Links</h4>
           <ul className="space-y-2 text-sm text-gray-400">
             <li>
               <Link to="/" className="inline-block transition-all duration-200 hover:text-white hover:translate-x-1">
@@ -100,7 +100,7 @@ export default function Footer() {
           className={colClass}
           style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '160ms' }}
         >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Our Services</h4>
+          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-grey)' }}>Our Services</h4>
           <ul className="space-y-2 text-sm text-gray-400">
             {services.map((s) => (
               <li key={s.path}>
@@ -120,22 +120,22 @@ export default function Footer() {
           className={colClass}
           style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(16px)', transitionDelay: '240ms' }}
         >
-          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-silver)' }}>Get in Touch</h4>
+          <h4 className="font-semibold mb-4" style={{ color: 'var(--ncm-grey)' }}>Get in Touch</h4>
           <ul className="space-y-3 text-sm text-gray-400">
             <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>📞</span> 062 830 3044
+              <span style={{ color: 'var(--ncm-teal)' }}>📞</span> 062 830 3044
             </li>
             <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>💬</span> 083 333 9349
+              <span style={{ color: 'var(--ncm-teal)' }}>💬</span> 083 333 9349
             </li>
             <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>✉️</span>
+              <span style={{ color: 'var(--ncm-teal)' }}>✉️</span>
               <a href="mailto:admin@ncmca.co.za" className="hover:text-white transition-colors duration-200">
                 admin@ncmca.co.za
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>🌐</span>
+              <span style={{ color: 'var(--ncm-teal)' }}>🌐</span>
               <a
                 href="https://www.ncmca.co.za"
                 target="_blank"
@@ -146,7 +146,7 @@ export default function Footer() {
               </a>
             </li>
             <li className="flex items-start gap-2">
-              <span style={{ color: 'var(--ncm-red)' }}>📍</span>
+              <span style={{ color: 'var(--ncm-teal)' }}>📍</span>
               <span>Durban, Umhlanga, Ballito &amp; Richards Bay</span>
             </li>
           </ul>
@@ -165,7 +165,7 @@ export default function Footer() {
           'fixed bottom-6 right-6 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ' +
           (showTop ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none')
         }
-        style={{ backgroundColor: 'var(--ncm-red)' }}
+        style={{ backgroundColor: 'var(--ncm-teal)' }}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M8 13V3M8 3L3 8M8 3l5 5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
