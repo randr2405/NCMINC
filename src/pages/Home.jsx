@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Renderer, Program, Mesh, Triangle } from 'ogl'
 
-
 const hexToRgb = hex => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   if (!result) return [1, 1, 1]
@@ -359,14 +358,26 @@ function MoltenMetal({
   )
 }
 
-/* ------------------------------------------------------------------ */
-/* Scroll-reveal helpers                                               */
-/* ------------------------------------------------------------------ */
+function SpotlightCard({ children, className = '', spotlightColor = 'rgba(15, 118, 110, 0.35)' }) {
+  const divRef = useRef(null)
 
-/** Fires `visible = true` once the element scrolls into view, then stops watching.
- *  Falls back to visible=true immediately if IntersectionObserver isn't available,
- *  or if the element is already on screen when it mounts, so content can never
- *  get stuck invisible. */
+  const handleMouseMove = e => {
+    if (!divRef.current) return
+    const rect = divRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    divRef.current.style.setProperty('--mouse-x', `${x}px`)
+    divRef.current.style.setProperty('--mouse-y', `${y}px`)
+    divRef.current.style.setProperty('--spotlight-color', spotlightColor)
+  }
+
+  return (
+    <div ref={divRef} onMouseMove={handleMouseMove} className={`card-spotlight ${className}`}>
+      {children}
+    </div>
+  )
+}
+
 function useReveal(threshold = 0.1) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -380,8 +391,6 @@ function useReveal(threshold = 0.1) {
       return
     }
 
-    // Already in (or close to) the viewport on mount — show it immediately
-    // instead of waiting for a scroll event that may never come.
     const rect = el.getBoundingClientRect()
     if (rect.top < window.innerHeight && rect.bottom > 0) {
       setVisible(true)
@@ -404,7 +413,6 @@ function useReveal(threshold = 0.1) {
   return [ref, visible]
 }
 
-/** Counts up from 0 to `end` once it scrolls into view. */
 function Counter({ end, suffix = '', duration = 1400 }) {
   const [ref, visible] = useReveal(0.3)
   const [value, setValue] = useState(0)
@@ -509,14 +517,38 @@ export default function Home() {
 
   return (
     <div className="text-black overflow-x-hidden">
-      {/* Hero */}
+      <style>{`
+        .card-spotlight {
+          position: relative;
+          overflow: hidden;
+          --mouse-x: 50%;
+          --mouse-y: 50%;
+          --spotlight-color: rgba(15, 118, 110, 0.35);
+        }
+        .card-spotlight::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 75%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
+        }
+        .card-spotlight:hover::before,
+        .card-spotlight:focus-within::before {
+          opacity: 1;
+        }
+      `}</style>
+
       <section
         className="relative px-6 sm:px-8 py-20 sm:py-28 text-center text-white overflow-hidden"
         style={{ backgroundColor: 'var(--ncm-black)' }}
       >
-        {/* Animated teal molten background, replacing the old static glow */}
         <div className="absolute inset-0" aria-hidden="true">
-                    <MoltenMetal
+          <MoltenMetal
             color1="#134e4a"
             color2="#14b8a6"
             color3="#f2ede4"
@@ -559,7 +591,7 @@ export default function Home() {
             }}
           >
             Trusted Advice.{' '}
-                       <span
+            <span
               className="relative inline-block"
               style={{ color: '#5eead4', textShadow: '0 2px 18px rgba(0,0,0,0.55)' }}
             >
@@ -615,7 +647,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Intro strip */}
       <section className="px-6 sm:px-8 py-14 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
         <Reveal className="max-w-3xl mx-auto">
           <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
@@ -631,7 +662,6 @@ export default function Home() {
         </Reveal>
       </section>
 
-      {/* Services grid */}
       <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
           Our Professional Services
@@ -643,35 +673,35 @@ export default function Home() {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {services.map((s, i) => (
             <Reveal key={s.path} delay={(i % 3) * 90} className="h-full">
-              <Link
-                to={s.path}
-                className="group flex flex-col h-full p-6 rounded-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                style={{ borderColor: 'var(--ncm-grey)' }}
+              <SpotlightCard
+                className="h-full rounded-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                spotlightColor="rgba(20, 184, 166, 0.28)"
               >
-                <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--ncm-black)' }}>
-                  {s.title}
-                </h3>
-                <ul className="text-sm text-gray-600 space-y-1 flex-1">
-                  {s.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span style={{ color: 'var(--ncm-teal)' }}>•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <span
-                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
-                  style={{ color: 'var(--ncm-teal)' }}
-                >
-                  Learn more →
-                </span>
-              </Link>
+                <Link to={s.path} className="group flex flex-col h-full p-6" style={{ borderColor: 'var(--ncm-grey)' }}>
+                  <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--ncm-black)' }}>
+                    {s.title}
+                  </h3>
+                  <ul className="text-sm text-gray-600 space-y-1 flex-1">
+                    {s.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span style={{ color: 'var(--ncm-teal)' }}>•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <span
+                    className="inline-flex items-center gap-1 mt-4 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
+                    style={{ color: 'var(--ncm-teal)' }}
+                  >
+                    Learn more →
+                  </span>
+                </Link>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* Why NCM strip */}
       <section className="px-6 sm:px-8 py-16 text-white text-center" style={{ backgroundColor: 'var(--ncm-black)' }}>
         <Reveal as="h2" className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
           More Than Compliance. A Professional Partner.
@@ -691,8 +721,6 @@ export default function Home() {
           </Link>
         </Reveal>
       </section>
-
-
     </div>
   )
 }
