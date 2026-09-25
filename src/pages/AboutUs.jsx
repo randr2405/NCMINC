@@ -614,7 +614,7 @@ export default function AboutUs() {
         </Reveal>
       </section>
 
-      <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: 'var(--ncm-grey)' }}>
+            <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: '#f0f7f6' }}>
         <div className="max-w-5xl mx-auto">
           <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Our Values
