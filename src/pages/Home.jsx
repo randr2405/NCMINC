@@ -559,12 +559,15 @@ export default function Home() {
             }}
           >
             Trusted Advice.{' '}
-            <span className="relative inline-block" style={{ color: 'var(--ncm-teal)' }}>
+                       <span
+              className="relative inline-block"
+              style={{ color: '#5eead4', textShadow: '0 2px 18px rgba(0,0,0,0.55)' }}
+            >
               Smart Solutions.
               <span
                 className="absolute left-0 -bottom-1 h-[3px] rounded-full transition-all duration-[900ms] ease-out"
                 style={{
-                  backgroundColor: 'var(--ncm-teal)',
+                  backgroundColor: '#5eead4',
                   width: heroIn ? '100%' : '0%',
                   transitionDelay: '550ms',
                 }}
