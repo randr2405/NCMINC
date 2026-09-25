@@ -1181,8 +1181,8 @@ export default function Careers() {
         <Hyperspeed effectOptions={heroHyperspeedOptions} />
         <div className="relative z-10 flex justify-center">
           <div
-            className="max-w-xl px-8 py-10 rounded-2xl"
-            style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)' }}
+            className="max-w-md px-8 py-10 rounded-2xl"
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Careers at NCM Inc</h1>
             <p className="text-gray-200">
