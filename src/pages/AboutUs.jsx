@@ -1,6 +1,7 @@
 ﻿import { Link } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Children, useLayoutEffect } from 'react'
 import { Renderer, Program, Mesh, Triangle } from 'ogl'
+import { motion, AnimatePresence } from 'motion/react'
 
 const hexToRgb = hex => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -440,6 +441,261 @@ function SpotlightCard({ children, className = '', spotlightColor = 'rgba(20, 18
   )
 }
 
+const stepVariants = {
+  enter: dir => ({
+    x: dir >= 0 ? '-100%' : '100%',
+    opacity: 0,
+  }),
+  center: {
+    x: '0%',
+    opacity: 1,
+  },
+  exit: dir => ({
+    x: dir >= 0 ? '50%' : '-50%',
+    opacity: 0,
+  }),
+}
+
+function CheckIcon(props) {
+  return (
+    <svg {...props} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <motion.path
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ delay: 0.1, type: 'tween', ease: 'easeOut', duration: 0.3 }}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 13l4 4L19 7"
+      />
+    </svg>
+  )
+}
+
+function StepConnector({ isComplete }) {
+  const lineVariants = {
+    incomplete: { width: 0, backgroundColor: 'transparent' },
+    complete: { width: '100%', backgroundColor: '#0f766e' },
+  }
+
+  return (
+    <div className="step-connector">
+      <motion.div
+        className="step-connector-inner"
+        variants={lineVariants}
+        initial={false}
+        animate={isComplete ? 'complete' : 'incomplete'}
+        transition={{ duration: 0.4 }}
+      />
+    </div>
+  )
+}
+
+function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators }) {
+  const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete'
+
+  const handleClick = () => {
+    if (step !== currentStep && !disableStepIndicators) onClickStep(step)
+  }
+
+  return (
+    <motion.div
+      onClick={handleClick}
+      className="step-indicator"
+      style={disableStepIndicators ? { pointerEvents: 'none', opacity: 0.5 } : {}}
+      animate={status}
+      initial={false}
+    >
+      <motion.div
+        variants={{
+          inactive: { scale: 1, backgroundColor: '#e6f2f0', color: '#0f766e' },
+          active: { scale: 1, backgroundColor: '#0f766e', color: '#fff' },
+          complete: { scale: 1, backgroundColor: '#0f766e', color: '#fff' },
+        }}
+        transition={{ duration: 0.3 }}
+        className="step-indicator-inner"
+      >
+        {status === 'complete' ? (
+          <CheckIcon className="check-icon" />
+        ) : status === 'active' ? (
+          <div className="active-dot" />
+        ) : (
+          <span className="step-number">{step}</span>
+        )}
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function SlideTransition({ children, direction, onHeightReady }) {
+  const containerRef = useRef(null)
+
+  useLayoutEffect(() => {
+    if (containerRef.current) onHeightReady(containerRef.current.offsetHeight)
+  }, [children, onHeightReady])
+
+  return (
+    <motion.div
+      ref={containerRef}
+      custom={direction}
+      variants={stepVariants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{ duration: 0.4 }}
+      style={{ position: 'absolute', left: 0, right: 0, top: 0 }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function StepContentWrapper({ isCompleted, currentStep, direction, children, className }) {
+  const [parentHeight, setParentHeight] = useState(0)
+
+  return (
+    <motion.div
+      className={className}
+      style={{ position: 'relative', overflow: 'hidden' }}
+      animate={{ height: isCompleted ? 0 : parentHeight }}
+      transition={{ type: 'spring', duration: 0.4 }}
+    >
+      <AnimatePresence initial={false} mode="sync" custom={direction}>
+        {!isCompleted && (
+          <SlideTransition key={currentStep} direction={direction} onHeightReady={h => setParentHeight(h)}>
+            {children}
+          </SlideTransition>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+function Step({ children }) {
+  return <div className="step-default">{children}</div>
+}
+
+function Stepper({
+  children,
+  initialStep = 1,
+  onStepChange = () => {},
+  onFinalStepCompleted = () => {},
+  stepCircleContainerClassName = '',
+  stepContainerClassName = '',
+  contentClassName = '',
+  footerClassName = '',
+  backButtonProps = {},
+  nextButtonProps = {},
+  backButtonText = 'Back',
+  nextButtonText = 'Continue',
+  disableStepIndicators = false,
+  renderStepIndicator,
+  ...rest
+}) {
+  const [currentStep, setCurrentStep] = useState(initialStep)
+  const [direction, setDirection] = useState(0)
+  const stepsArray = Children.toArray(children)
+  const totalSteps = stepsArray.length
+  const isCompleted = currentStep > totalSteps
+  const isLastStep = currentStep === totalSteps
+
+  const updateStep = newStep => {
+    setCurrentStep(newStep)
+    if (newStep > totalSteps) {
+      onFinalStepCompleted()
+    } else {
+      onStepChange(newStep)
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setDirection(-1)
+      updateStep(currentStep - 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (!isLastStep) {
+      setDirection(1)
+      updateStep(currentStep + 1)
+    }
+  }
+
+  const handleComplete = () => {
+    setDirection(1)
+    updateStep(totalSteps + 1)
+  }
+
+  return (
+    <div className="outer-container" {...rest}>
+      <div
+        className={`step-circle-container ${stepCircleContainerClassName}`}
+        style={{ border: '1px solid #e6f2f0', backgroundColor: '#fff' }}
+      >
+        <div className={`step-indicator-row ${stepContainerClassName}`}>
+          {stepsArray.map((_, index) => {
+            const stepNumber = index + 1
+            const isNotLastStep = index < totalSteps - 1
+            return (
+              <div key={stepNumber} style={{ display: 'contents' }}>
+                {renderStepIndicator ? (
+                  renderStepIndicator({
+                    step: stepNumber,
+                    currentStep,
+                    onStepClick: clicked => {
+                      setDirection(clicked > currentStep ? 1 : -1)
+                      updateStep(clicked)
+                    },
+                  })
+                ) : (
+                  <StepIndicator
+                    step={stepNumber}
+                    disableStepIndicators={disableStepIndicators}
+                    currentStep={currentStep}
+                    onClickStep={clicked => {
+                      setDirection(clicked > currentStep ? 1 : -1)
+                      updateStep(clicked)
+                    }}
+                  />
+                )}
+                {isNotLastStep && <StepConnector isComplete={currentStep > stepNumber} />}
+              </div>
+            )
+          })}
+        </div>
+
+        <StepContentWrapper
+          isCompleted={isCompleted}
+          currentStep={currentStep}
+          direction={direction}
+          className={`step-content-default ${contentClassName}`}
+        >
+          {stepsArray[currentStep - 1]}
+        </StepContentWrapper>
+
+        {!isCompleted && (
+          <div className={`footer-container ${footerClassName}`}>
+            <div className={`footer-nav ${currentStep !== 1 ? 'spread' : 'end'}`}>
+              {currentStep !== 1 && (
+                <button
+                  onClick={handleBack}
+                  className={`back-button ${currentStep === 1 ? 'inactive' : ''}`}
+                  {...backButtonProps}
+                >
+                  {backButtonText}
+                </button>
+              )}
+              <button onClick={isLastStep ? handleComplete : handleNext} className="next-button" {...nextButtonProps}>
+                {isLastStep ? 'Complete' : nextButtonText}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function useReveal(threshold = 0.1) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -535,12 +791,6 @@ export default function AboutUs() {
     'Long-term value creation',
   ]
 
-  const approach = [
-    { title: 'Understand', text: 'We take the time to understand our clients, their businesses, their financial position and their objectives.' },
-    { title: 'Advise', text: 'We provide professional advice based on technical expertise, commercial understanding and the specific circumstances of each client.' },
-    { title: 'Support', text: 'We remain alongside our clients as their businesses evolve, providing ongoing professional support as new opportunities and challenges arise.' },
-  ]
-
   return (
     <div className="text-black overflow-x-hidden">
       <style>{`
@@ -567,6 +817,95 @@ export default function AboutUs() {
         .card-spotlight:focus-within::before {
           opacity: 1;
         }
+        .outer-container {
+          display: flex;
+          min-height: 100%;
+          flex: 1 1 0%;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+        .step-circle-container {
+          margin-left: auto;
+          margin-right: auto;
+          width: 100%;
+          max-width: 32rem;
+          border-radius: 1.5rem;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.03);
+        }
+        .step-indicator-row {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          padding: 2rem;
+        }
+        .step-content-default {
+          position: relative;
+          overflow: hidden;
+        }
+        .step-default {
+          padding-left: 2rem;
+          padding-right: 2rem;
+        }
+        .footer-container {
+          padding-left: 2rem;
+          padding-right: 2rem;
+          padding-bottom: 2rem;
+        }
+        .footer-nav {
+          margin-top: 2rem;
+          display: flex;
+        }
+        .footer-nav.spread { justify-content: space-between; }
+        .footer-nav.end { justify-content: flex-end; }
+        .back-button {
+          transition: all 350ms;
+          border-radius: 0.25rem;
+          padding: 0.25rem 0.5rem;
+          color: #a3a3a3;
+          cursor: pointer;
+        }
+        .back-button:hover { color: #0f766e; }
+        .back-button.inactive { pointer-events: none; opacity: 0.5; color: #a3a3a3; }
+        .next-button {
+          transition: all 350ms;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9999px;
+          background-color: #0f766e;
+          color: #fff;
+          font-weight: 500;
+          letter-spacing: -0.025em;
+          padding: 0.5rem 1.1rem;
+          cursor: pointer;
+        }
+        .next-button:hover { background-color: #0d5c55; }
+        .step-indicator { position: relative; cursor: pointer; outline: none; }
+        .step-indicator-inner {
+          display: flex;
+          height: 2rem;
+          width: 2rem;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9999px;
+          font-weight: 600;
+        }
+        .active-dot { height: 0.75rem; width: 0.75rem; border-radius: 9999px; background-color: #fff; }
+        .step-number { font-size: 0.875rem; }
+        .step-connector {
+          position: relative;
+          margin-left: 0.5rem;
+          margin-right: 0.5rem;
+          height: 0.125rem;
+          flex: 1;
+          overflow: hidden;
+          border-radius: 0.25rem;
+          background-color: #e6f2f0;
+        }
+        .step-connector-inner { position: absolute; left: 0; top: 0; height: 100%; }
+        .check-icon { height: 1rem; width: 1rem; color: #fff; }
       `}</style>
 
       <section className="relative bg-black text-white px-6 sm:px-8 py-20 sm:py-24 text-center overflow-hidden">
@@ -710,12 +1049,12 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: '#0d2e2a' }}>
+      <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: '#08201d' }}>
         <div className="max-w-5xl mx-auto">
-          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
+          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: '#5eead4' }}>
             Why NCM
           </Reveal>
-          <Reveal delay={60} className="text-center text-gray-300 mb-10">
+          <Reveal delay={60} className="text-center mb-10" style={{ color: '#cdeae6' }}>
             More Than Compliance. A Professional Partner.
           </Reveal>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -723,12 +1062,10 @@ export default function AboutUs() {
               <Reveal key={w.title} delay={(i % 2) * 100} scale className="h-full">
                 <SpotlightCard
                   className="h-full p-5 rounded-lg transition-all duration-300 hover:-translate-y-1"
-                  spotlightColor="rgba(94, 234, 212, 0.18)"
+                  spotlightColor="rgba(94, 234, 212, 0.16)"
                 >
-                  <div style={{ backgroundColor: 'transparent' }}>
-                    <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-grey)' }}>{w.title}</h3>
-                    <p className="text-sm text-gray-300">{w.text}</p>
-                  </div>
+                  <h3 className="font-semibold mb-2" style={{ color: '#5eead4' }}>{w.title}</h3>
+                  <p className="text-sm" style={{ color: '#d4e8e5' }}>{w.text}</p>
                 </SpotlightCard>
               </Reveal>
             ))}
@@ -740,25 +1077,35 @@ export default function AboutUs() {
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-10" style={{ color: 'var(--ncm-teal)' }}>
           Our Approach
         </Reveal>
-        <div className="relative grid md:grid-cols-3 gap-10 md:gap-8">
-          <div
-            aria-hidden="true"
-            className="hidden md:block absolute top-5 left-[16.5%] right-[16.5%] h-px"
-            style={{ backgroundColor: 'var(--ncm-grey)' }}
-          />
-          {approach.map((step, i) => (
-            <Reveal key={step.title} delay={i * 140} scale className="relative">
-              <div
-                className="mx-auto mb-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold relative z-10"
-                style={{ backgroundColor: 'var(--ncm-teal)' }}
-              >
-                {i + 1}
-              </div>
-              <h3 className="font-semibold text-lg mb-2">{step.title}</h3>
-              <p className="text-gray-600 text-sm">{step.text}</p>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal scale>
+          <Stepper
+            initialStep={1}
+            backButtonText="Previous"
+            nextButtonText="Next"
+          >
+            <Step>
+              <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)' }}>Understand</h3>
+              <p className="text-gray-600 text-sm">
+                We take the time to understand our clients, their businesses, their financial
+                position and their objectives.
+              </p>
+            </Step>
+            <Step>
+              <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)' }}>Advise</h3>
+              <p className="text-gray-600 text-sm">
+                We provide professional advice based on technical expertise, commercial
+                understanding and the specific circumstances of each client.
+              </p>
+            </Step>
+            <Step>
+              <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)' }}>Support</h3>
+              <p className="text-gray-600 text-sm">
+                We remain alongside our clients as their businesses evolve, providing ongoing
+                professional support as new opportunities and challenges arise.
+              </p>
+            </Step>
+          </Stepper>
+        </Reveal>
       </section>
 
       <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto text-center">
