@@ -420,6 +420,26 @@ function LightTunnel({
   )
 }
 
+function SpotlightCard({ children, className = '', spotlightColor = 'rgba(20, 184, 166, 0.28)' }) {
+  const divRef = useRef(null)
+
+  const handleMouseMove = e => {
+    if (!divRef.current) return
+    const rect = divRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    divRef.current.style.setProperty('--mouse-x', `${x}px`)
+    divRef.current.style.setProperty('--mouse-y', `${y}px`)
+    divRef.current.style.setProperty('--spotlight-color', spotlightColor)
+  }
+
+  return (
+    <div ref={divRef} onMouseMove={handleMouseMove} className={`card-spotlight ${className}`}>
+      {children}
+    </div>
+  )
+}
+
 function useReveal(threshold = 0.1) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -455,7 +475,7 @@ function useReveal(threshold = 0.1) {
   return [ref, visible]
 }
 
-function Reveal({ as: Tag = 'div', delay = 0, className = '', style = {}, children }) {
+function Reveal({ as: Tag = 'div', delay = 0, className = '', style = {}, children, scale = false }) {
   const [ref, visible] = useReveal()
   return (
     <Tag
@@ -467,7 +487,7 @@ function Reveal({ as: Tag = 'div', delay = 0, className = '', style = {}, childr
       style={{
         ...style,
         opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : 'translateY(20px)',
+        transform: visible ? 'none' : `translateY(24px) scale(${scale ? 0.96 : 1})`,
         transitionDelay: `${delay}ms`,
       }}
     >
@@ -523,9 +543,35 @@ export default function AboutUs() {
 
   return (
     <div className="text-black overflow-x-hidden">
+      <style>{`
+        .card-spotlight {
+          position: relative;
+          overflow: hidden;
+          --mouse-x: 50%;
+          --mouse-y: 50%;
+          --spotlight-color: rgba(20, 184, 166, 0.28);
+        }
+        .card-spotlight::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 75%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
+        }
+        .card-spotlight:hover::before,
+        .card-spotlight:focus-within::before {
+          opacity: 1;
+        }
+      `}</style>
+
       <section className="relative bg-black text-white px-6 sm:px-8 py-20 sm:py-24 text-center overflow-hidden">
         <div className="absolute inset-0" aria-hidden="true">
-                            <LightTunnel
+          <LightTunnel
             cableColor="#14b8a6"
             pulseColor="#5eead4"
             tunnelColor="#0f766e"
@@ -614,7 +660,7 @@ export default function AboutUs() {
         </Reveal>
       </section>
 
-            <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: '#f0f7f6' }}>
+      <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: '#f0f7f6' }}>
         <div className="max-w-5xl mx-auto">
           <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Our Values
@@ -624,14 +670,14 @@ export default function AboutUs() {
           </Reveal>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {values.map((v, i) => (
-              <Reveal key={v.title} delay={(i % 3) * 90} className="h-full">
-                <div
+              <Reveal key={v.title} delay={(i % 3) * 90} scale className="h-full">
+                <SpotlightCard
                   className="h-full bg-white p-6 rounded-lg shadow-sm border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                  style={{ borderColor: 'var(--ncm-grey)' }}
+                  spotlightColor="rgba(20, 184, 166, 0.22)"
                 >
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-black)' }}>{v.title}</h3>
                   <p className="text-sm text-gray-600">{v.text}</p>
-                </div>
+                </SpotlightCard>
               </Reveal>
             ))}
           </div>
@@ -664,7 +710,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
+      <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: '#0d2e2a' }}>
         <div className="max-w-5xl mx-auto">
           <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Why NCM
@@ -674,14 +720,16 @@ export default function AboutUs() {
           </Reveal>
           <div className="grid sm:grid-cols-2 gap-6">
             {whyNCM.map((w, i) => (
-              <Reveal key={w.title} delay={(i % 2) * 100} className="h-full">
-                <div
+              <Reveal key={w.title} delay={(i % 2) * 100} scale className="h-full">
+                <SpotlightCard
                   className="h-full p-5 rounded-lg transition-all duration-300 hover:-translate-y-1"
-                  style={{ backgroundColor: '#1a1a1a' }}
+                  spotlightColor="rgba(94, 234, 212, 0.18)"
                 >
-                  <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-grey)' }}>{w.title}</h3>
-                  <p className="text-sm text-gray-300">{w.text}</p>
-                </div>
+                  <div style={{ backgroundColor: 'transparent' }}>
+                    <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-grey)' }}>{w.title}</h3>
+                    <p className="text-sm text-gray-300">{w.text}</p>
+                  </div>
+                </SpotlightCard>
               </Reveal>
             ))}
           </div>
@@ -699,7 +747,7 @@ export default function AboutUs() {
             style={{ backgroundColor: 'var(--ncm-grey)' }}
           />
           {approach.map((step, i) => (
-            <Reveal key={step.title} delay={i * 140} className="relative">
+            <Reveal key={step.title} delay={i * 140} scale className="relative">
               <div
                 className="mx-auto mb-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold relative z-10"
                 style={{ backgroundColor: 'var(--ncm-teal)' }}
