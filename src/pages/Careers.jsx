@@ -14,6 +14,7 @@ import {
 } from 'motion/react'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { SentIcon, Tick02Icon } from '@hugeicons/core-free-icons'
+import Lenis from 'lenis'
 
 const SLIDE_SEND_PAD = 4
 const SLIDE_SEND_SQUASH_MAX = 0.08
@@ -911,6 +912,9 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
         })
         this.renderer.setSize(initW, initH, false)
         this.renderer.setPixelRatio(window.devicePixelRatio)
+        this.renderer.domElement.style.width = '100%'
+        this.renderer.domElement.style.height = '100%'
+        this.renderer.domElement.style.display = 'block'
         this.composer = new EffectComposer(this.renderer)
         container.append(this.renderer.domElement)
 
@@ -1783,6 +1787,25 @@ const heroHyperspeedOptions = {
 
 export default function Careers() {
   const openings = []
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    })
+
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+    const rafId = requestAnimationFrame(raf)
+
+    return () => {
+      cancelAnimationFrame(rafId)
+      lenis.destroy()
+    }
+  }, [])
 
   const [formData, setFormData] = useState({
     name: '',
