@@ -525,7 +525,7 @@ export default function AboutUs() {
     <div className="text-black overflow-x-hidden">
       <section className="relative bg-black text-white px-6 sm:px-8 py-20 sm:py-24 text-center overflow-hidden">
         <div className="absolute inset-0" aria-hidden="true">
-                    <LightTunnel
+                            <LightTunnel
             cableColor="#14b8a6"
             pulseColor="#5eead4"
             tunnelColor="#0f766e"
@@ -541,17 +541,17 @@ export default function AboutUs() {
             rimWidth={0.12}
             waviness={0.2}
             sway={0.3}
-            size={0.55}
+            size={0.9}
             centerX={0}
             centerY={0}
-            glow={0.7}
-            fadeNear={0.35}
-            fadeFar={1.3}
-            brightness={0.7}
+            glow={0.6}
+            fadeNear={0.85}
+            fadeFar={1.6}
+            brightness={0.65}
             colorVariance
             grain
             grainIntensity={0.05}
-            opacity={0.5}
+            opacity={0.45}
             mouseInteraction
             mouseStrength={0.06}
           />
