@@ -20,7 +20,7 @@ export default function Careers() {
 
       {/* Why work here */}
       <section className="px-4 sm:px-8 py-16 max-w-4xl mx-auto text-center">
-        <h2 className="text-2xl font-bold mb-8" style={{ color: 'var(--ncm-red)' }}>Why Work With Us</h2>
+        <h2 className="text-2xl font-bold mb-8" style={{ color: 'var(--ncm-teal)' }}>Why Work With Us</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <div>
             <h3 className="font-semibold text-lg mb-2">Professional Growth</h3>
@@ -50,7 +50,7 @@ export default function Careers() {
                 <div
                   key={job.title}
                   className="bg-white p-5 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
-                  style={{ borderColor: 'var(--ncm-silver)' }}
+                  style={{ borderColor: 'var(--ncm-grey)' }}
                 >
                   <div>
                     <h3 className="font-semibold">{job.title}</h3>
@@ -59,7 +59,7 @@ export default function Careers() {
                   <Link
                     to="/contact"
                     className="text-sm font-medium"
-                    style={{ color: 'var(--ncm-red)' }}
+                    style={{ color: 'var(--ncm-teal)' }}
                   >
                     Apply →
                   </Link>
@@ -77,7 +77,7 @@ export default function Careers() {
       </section>
 
       {/* CTA */}
-      <section className="px-4 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-red)' }}>
+      <section className="px-4 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
         <h2 className="text-2xl md:text-3xl font-bold mb-4">Interested in Joining Us?</h2>
         <p className="mb-8 max-w-xl mx-auto">
           Send us your CV and a short introduction, and we'll be in touch if a suitable opportunity arises.
@@ -85,7 +85,7 @@ export default function Careers() {
         <Link
           to="/contact"
           className="inline-block px-6 py-3 rounded-md font-semibold bg-white"
-          style={{ color: 'var(--ncm-red)' }}
+          style={{ color: 'var(--ncm-teal)' }}
         >
           Get in Touch
         </Link>

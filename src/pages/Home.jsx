@@ -156,14 +156,14 @@ export default function Home() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: 'var(--ncm-red)' }}
+          style={{ backgroundColor: 'var(--ncm-teal)' }}
         />
 
         <div className="relative">
           <p
             className="uppercase tracking-widest text-xs sm:text-sm mb-4 transition-all duration-700 ease-out"
             style={{
-              color: 'var(--ncm-silver)',
+              color: 'var(--ncm-grey)',
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(10px)',
             }}
@@ -180,12 +180,12 @@ export default function Home() {
             }}
           >
             Trusted Advice.{' '}
-            <span className="relative inline-block" style={{ color: 'var(--ncm-red)' }}>
+            <span className="relative inline-block" style={{ color: 'var(--ncm-teal)' }}>
               Smart Solutions.
               <span
                 className="absolute left-0 -bottom-1 h-[3px] rounded-full transition-all duration-[900ms] ease-out"
                 style={{
-                  backgroundColor: 'var(--ncm-red)',
+                  backgroundColor: 'var(--ncm-teal)',
                   width: heroIn ? '100%' : '0%',
                   transitionDelay: '550ms',
                 }}
@@ -218,14 +218,14 @@ export default function Home() {
             <Link
               to="/contact"
               className="px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
-              style={{ backgroundColor: 'var(--ncm-red)' }}
+              style={{ backgroundColor: 'var(--ncm-teal)' }}
             >
               Get in Touch
             </Link>
             <Link
               to="/about-us"
               className="px-6 py-3 rounded-md font-semibold border transition-colors duration-200 hover:bg-white/10"
-              style={{ borderColor: 'var(--ncm-silver)', color: 'var(--ncm-silver)' }}
+              style={{ borderColor: 'var(--ncm-grey)', color: 'var(--ncm-grey)' }}
             >
               Learn More About Us
             </Link>
@@ -251,7 +251,7 @@ export default function Home() {
 
       {/* Services grid */}
       <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-red)' }}>
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
           Our Professional Services
         </Reveal>
         <Reveal delay={80} className="text-center text-gray-600 mb-12">
@@ -264,7 +264,7 @@ export default function Home() {
               <Link
                 to={s.path}
                 className="group flex flex-col h-full p-6 rounded-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                style={{ borderColor: 'var(--ncm-silver)' }}
+                style={{ borderColor: 'var(--ncm-grey)' }}
               >
                 <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--ncm-black)' }}>
                   {s.title}
@@ -272,14 +272,14 @@ export default function Home() {
                 <ul className="text-sm text-gray-600 space-y-1 flex-1">
                   {s.items.map((item) => (
                     <li key={item} className="flex items-start gap-2">
-                      <span style={{ color: 'var(--ncm-red)' }}>•</span>
+                      <span style={{ color: 'var(--ncm-teal)' }}>•</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
                 <span
                   className="inline-flex items-center gap-1 mt-4 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
-                  style={{ color: 'var(--ncm-red)' }}
+                  style={{ color: 'var(--ncm-teal)' }}
                 >
                   Learn more →
                 </span>
@@ -303,7 +303,7 @@ export default function Home() {
           <Link
             to="/about-us"
             className="inline-block px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-            style={{ backgroundColor: 'var(--ncm-red)' }}
+            style={{ backgroundColor: 'var(--ncm-teal)' }}
           >
             Why Choose NCM Inc
           </Link>

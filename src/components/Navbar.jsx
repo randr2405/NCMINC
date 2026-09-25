@@ -45,7 +45,7 @@ export default function Navbar() {
         'sticky top-0 z-50 bg-white transition-shadow duration-300 ' +
         (scrolled ? 'shadow-md' : 'shadow-none border-b')
       }
-      style={{ borderColor: scrolled ? 'transparent' : 'var(--ncm-silver)' }}
+      style={{ borderColor: scrolled ? 'transparent' : 'var(--ncm-grey)' }}
     >
       <div
         className={
@@ -58,7 +58,7 @@ export default function Navbar() {
             NCM{' '}
             <span
               className="inline-block transition-transform duration-300 group-hover:translate-x-0.5"
-              style={{ color: 'var(--ncm-red)' }}
+              style={{ color: 'var(--ncm-teal)' }}
             >
               INC
             </span>
@@ -75,7 +75,7 @@ export default function Navbar() {
             About Us
             <span
               className="absolute left-0 -bottom-1 h-[2px] w-0 transition-all duration-300 group-hover/link:w-full"
-              style={{ backgroundColor: 'var(--ncm-red)' }}
+              style={{ backgroundColor: 'var(--ncm-teal)' }}
             />
           </Link>
 
@@ -107,7 +107,7 @@ export default function Navbar() {
                   ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
                   : 'opacity-0 scale-95 -translate-y-1 pointer-events-none')
               }
-              style={{ borderColor: 'var(--ncm-silver)' }}
+              style={{ borderColor: 'var(--ncm-grey)' }}
             >
               {services.map((s, i) => (
                 <Link
@@ -119,7 +119,7 @@ export default function Navbar() {
                   <span>{s.name}</span>
                   <span
                     className="opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all duration-150"
-                    style={{ color: 'var(--ncm-red)' }}
+                    style={{ color: 'var(--ncm-teal)' }}
                   >
                     ›
                   </span>
@@ -136,14 +136,14 @@ export default function Navbar() {
             Careers
             <span
               className="absolute left-0 -bottom-1 h-[2px] w-0 transition-all duration-300 group-hover/link:w-full"
-              style={{ backgroundColor: 'var(--ncm-red)' }}
+              style={{ backgroundColor: 'var(--ncm-teal)' }}
             />
           </Link>
 
           <Link
             to="/contact"
             className="px-5 py-2 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0"
-            style={{ backgroundColor: 'var(--ncm-red)' }}
+            style={{ backgroundColor: 'var(--ncm-teal)' }}
           >
             Contact Us
           </Link>
@@ -177,7 +177,7 @@ export default function Navbar() {
           'md:hidden overflow-hidden transition-all duration-300 ease-in-out border-t ' +
           (mobileOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0')
         }
-        style={{ borderColor: 'var(--ncm-silver)' }}
+        style={{ borderColor: 'var(--ncm-grey)' }}
       >
         <div className="px-4 sm:px-8 py-4 flex flex-col gap-3">
           <Link to="/about-us" onClick={() => setMobileOpen(false)} style={{ color: 'var(--ncm-black)' }}>
@@ -186,7 +186,7 @@ export default function Navbar() {
           <details className="group">
             <summary className="cursor-pointer list-none flex items-center justify-between" style={{ color: 'var(--ncm-black)' }}>
               Services
-              <span className="transition-transform duration-200 group-open:rotate-45 text-lg" style={{ color: 'var(--ncm-red)' }}>+</span>
+              <span className="transition-transform duration-200 group-open:rotate-45 text-lg" style={{ color: 'var(--ncm-teal)' }}>+</span>
             </summary>
             <div className="flex flex-col gap-2 mt-2 pl-4">
               {services.map((s) => (
@@ -213,7 +213,7 @@ export default function Navbar() {
             to="/contact"
             onClick={() => setMobileOpen(false)}
             className="font-semibold"
-            style={{ color: 'var(--ncm-red)' }}
+            style={{ color: 'var(--ncm-teal)' }}
           >
             Contact Us
           </Link>

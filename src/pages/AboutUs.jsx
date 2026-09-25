@@ -113,7 +113,7 @@ export default function AboutUs() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: 'var(--ncm-red)' }}
+          style={{ backgroundColor: 'var(--ncm-teal)' }}
         />
         <div className="relative">
           <h1
@@ -141,7 +141,7 @@ export default function AboutUs() {
 
       {/* Our Story */}
       <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-red)' }}>
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Our Story
         </Reveal>
         <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
@@ -165,7 +165,7 @@ export default function AboutUs() {
           focus on client experience.
         </Reveal>
         <Reveal delay={280}>
-          <blockquote className="border-l-4 pl-6 italic text-gray-800" style={{ borderColor: 'var(--ncm-red)' }}>
+          <blockquote className="border-l-4 pl-6 italic text-gray-800" style={{ borderColor: 'var(--ncm-teal)' }}>
             Our heritage gives us experience.<br />
             Our people give us expertise.<br />
             Our technology gives us agility.<br />
@@ -177,7 +177,7 @@ export default function AboutUs() {
       {/* Our Values */}
       <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: 'var(--ncm-grey)' }}>
         <div className="max-w-5xl mx-auto">
-          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-red)' }}>
+          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Our Values
           </Reveal>
           <Reveal delay={60} className="text-center text-gray-600 mb-10">
@@ -188,7 +188,7 @@ export default function AboutUs() {
               <Reveal key={v.title} delay={(i % 3) * 90} className="h-full">
                 <div
                   className="h-full bg-white p-6 rounded-lg shadow-sm border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                  style={{ borderColor: 'var(--ncm-silver)' }}
+                  style={{ borderColor: 'var(--ncm-grey)' }}
                 >
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-black)' }}>{v.title}</h3>
                   <p className="text-sm text-gray-600">{v.text}</p>
@@ -201,7 +201,7 @@ export default function AboutUs() {
 
       {/* Leadership */}
       <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-red)' }}>
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Our Leadership
         </Reveal>
         <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
@@ -218,7 +218,7 @@ export default function AboutUs() {
             <Reveal key={item} delay={140 + (i % 4) * 60} className="flex items-center gap-2 text-gray-700">
               <span
                 className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
-                style={{ backgroundColor: 'var(--ncm-red)' }}
+                style={{ backgroundColor: 'var(--ncm-teal)' }}
               />
               {item}
             </Reveal>
@@ -229,7 +229,7 @@ export default function AboutUs() {
       {/* Why NCM */}
       <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: 'var(--ncm-black)' }}>
         <div className="max-w-5xl mx-auto">
-          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-red)' }}>
+          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Why NCM
           </Reveal>
           <Reveal delay={60} className="text-center text-gray-300 mb-10">
@@ -242,7 +242,7 @@ export default function AboutUs() {
                   className="h-full p-5 rounded-lg transition-all duration-300 hover:-translate-y-1"
                   style={{ backgroundColor: '#1a1a1a' }}
                 >
-                  <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-silver)' }}>{w.title}</h3>
+                  <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-grey)' }}>{w.title}</h3>
                   <p className="text-sm text-gray-300">{w.text}</p>
                 </div>
               </Reveal>
@@ -253,20 +253,20 @@ export default function AboutUs() {
 
       {/* Our Approach — an actual 3-step sequence, so it earns the connecting line */}
       <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto text-center">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-10" style={{ color: 'var(--ncm-red)' }}>
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-10" style={{ color: 'var(--ncm-teal)' }}>
           Our Approach
         </Reveal>
         <div className="relative grid md:grid-cols-3 gap-10 md:gap-8">
           <div
             aria-hidden="true"
             className="hidden md:block absolute top-5 left-[16.5%] right-[16.5%] h-px"
-            style={{ backgroundColor: 'var(--ncm-silver)' }}
+            style={{ backgroundColor: 'var(--ncm-grey)' }}
           />
           {approach.map((step, i) => (
             <Reveal key={step.title} delay={i * 140} className="relative">
               <div
                 className="mx-auto mb-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold relative z-10"
-                style={{ backgroundColor: 'var(--ncm-red)' }}
+                style={{ backgroundColor: 'var(--ncm-teal)' }}
               >
                 {i + 1}
               </div>
@@ -279,7 +279,7 @@ export default function AboutUs() {
 
       {/* Building the Future */}
       <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto text-center">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-red)' }}>
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Building the Future
         </Reveal>
         <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
@@ -305,7 +305,7 @@ export default function AboutUs() {
       </section>
 
       {/* Our Promise */}
-      <section className="px-6 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-red)' }}>
+      <section className="px-6 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2">
           Our Promise
         </Reveal>
@@ -321,7 +321,7 @@ export default function AboutUs() {
           <Link
             to="/contact"
             className="inline-block mt-8 px-6 py-3 rounded-md font-semibold bg-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
-            style={{ color: 'var(--ncm-red)' }}
+            style={{ color: 'var(--ncm-teal)' }}
           >
             Get in Touch
           </Link>
