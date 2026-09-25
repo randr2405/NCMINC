@@ -284,6 +284,102 @@ function Particles({
   return <div ref={containerRef} className={`ncm-particles-container${className ? ` ${className}` : ''}`} />
 }
 
+const REVEAL_EASE = [0.16, 1, 0.3, 1]
+
+function Reveal({
+  children,
+  as: Tag = 'div',
+  className = '',
+  style = {},
+  y = 28,
+  x = 0,
+  scale = 1,
+  delay = 0,
+  duration = 0.7,
+  once = true,
+  amount = 0.3,
+  ...rest
+}) {
+  const reduce = useReducedMotion()
+  const MotionTag = motion[Tag] || motion.div
+
+  if (reduce) {
+    return (
+      <MotionTag className={className} style={style} {...rest}>
+        {children}
+      </MotionTag>
+    )
+  }
+
+  return (
+    <MotionTag
+      className={className}
+      style={style}
+      initial={{ opacity: 0, y, x, scale }}
+      whileInView={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+      viewport={{ once, amount }}
+      transition={{ duration, delay, ease: REVEAL_EASE }}
+      {...rest}
+    >
+      {children}
+    </MotionTag>
+  )
+}
+
+function RevealGroup({ children, className = '', stagger = 0.09, delayChildren = 0, once = true, amount = 0.25 }) {
+  const reduce = useReducedMotion()
+
+  if (reduce) {
+    return <div className={className}>{children}</div>
+  }
+
+  return (
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once, amount }}
+      variants={{
+        hidden: {},
+        show: {
+          transition: {
+            staggerChildren: stagger,
+            delayChildren,
+          },
+        },
+      }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function RevealItem({ children, className = '', style = {}, y = 20, ...rest }) {
+  const reduce = useReducedMotion()
+
+  if (reduce) {
+    return (
+      <div className={className} style={style} {...rest}>
+        {children}
+      </div>
+    )
+  }
+
+  return (
+    <motion.div
+      className={className}
+      style={style}
+      variants={{
+        hidden: { opacity: 0, y },
+        show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: REVEAL_EASE } },
+      }}
+      {...rest}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 const SLIDE_SEND_PAD = 4
 const SLIDE_SEND_SQUASH_MAX = 0.08
 const SLIDE_SEND_SQUASH_DIV = 110
@@ -877,6 +973,87 @@ function SlideSend({
   )
 }
 
+function ContactHero() {
+  const ref = useRef(null)
+  const reduce = useReducedMotion()
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 90])
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
+  const leftX = useTransform(scrollYProgress, [0, 1], [0, -60])
+  const rightX = useTransform(scrollYProgress, [0, 1], [0, 60])
+
+  return (
+    <section
+      ref={ref}
+      className="relative px-4 sm:px-8 py-16 text-center text-white overflow-hidden"
+      style={{ backgroundColor: 'var(--ncm-black)' }}
+    >
+      <motion.div
+        className="absolute inset-y-0 left-0 w-1/3 md:w-2/5"
+        style={{ x: reduce ? 0 : leftX }}
+      >
+        <Particles
+          particleColors={['#0f766e', '#14b8a6', '#5eead4']}
+          particleCount={140}
+          particleSpread={10}
+          speed={0.1}
+          particleBaseSize={90}
+          moveParticlesOnHover
+          alphaParticles={false}
+          disableRotation={false}
+          pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
+        />
+      </motion.div>
+      <motion.div
+        className="absolute inset-y-0 right-0 w-1/3 md:w-2/5"
+        style={{ x: reduce ? 0 : rightX }}
+      >
+        <Particles
+          particleColors={['#0f766e', '#14b8a6', '#5eead4']}
+          particleCount={140}
+          particleSpread={10}
+          speed={0.1}
+          particleBaseSize={90}
+          moveParticlesOnHover
+          alphaParticles={false}
+          disableRotation={false}
+          pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
+        />
+      </motion.div>
+      <motion.div
+        className="relative z-10"
+        style={{ y: reduce ? 0 : heroY, opacity: reduce ? 1 : heroOpacity }}
+      >
+        <motion.h1
+          className="text-4xl md:text-5xl font-bold mb-4"
+          initial={reduce ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: REVEAL_EASE }}
+        >
+          Contact Us
+        </motion.h1>
+        <motion.p
+          className="text-gray-300 max-w-xl mx-auto"
+          initial={reduce ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.12, ease: REVEAL_EASE }}
+        >
+          Have a question or need professional advice? Get in touch and our team will
+          respond as soon as possible.
+        </motion.p>
+      </motion.div>
+    </section>
+  )
+}
+
+const CONTACT_ITEMS = [
+  { icon: '📞', label: 'Call Us', value: '062 830 3044' },
+  { icon: '💬', label: 'WhatsApp', value: '083 333 9349' },
+  { icon: '✉️', label: 'Email', value: 'admin@ncmca.co.za' },
+  { icon: '🌐', label: 'Website', value: 'www.ncmca.co.za' },
+  { icon: '📍', label: 'Locations', value: 'Durban, Umhlanga, Ballito and Richards Bay' },
+]
+
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -927,165 +1104,122 @@ export default function Contact() {
 
   return (
     <div className="text-black">
-      <section
-        className="relative px-4 sm:px-8 py-16 text-center text-white overflow-hidden"
-        style={{ backgroundColor: 'var(--ncm-black)' }}
-      >
-        <div className="absolute inset-y-0 left-0 w-1/3 md:w-2/5">
-          <Particles
-            particleColors={['#0f766e', '#14b8a6', '#5eead4']}
-            particleCount={140}
-            particleSpread={10}
-            speed={0.1}
-            particleBaseSize={90}
-            moveParticlesOnHover
-            alphaParticles={false}
-            disableRotation={false}
-            pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
-          />
-        </div>
-        <div className="absolute inset-y-0 right-0 w-1/3 md:w-2/5">
-          <Particles
-            particleColors={['#0f766e', '#14b8a6', '#5eead4']}
-            particleCount={140}
-            particleSpread={10}
-            speed={0.1}
-            particleBaseSize={90}
-            moveParticlesOnHover
-            alphaParticles={false}
-            disableRotation={false}
-            pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
-          />
-        </div>
-        <div className="relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-          <p className="text-gray-300 max-w-xl mx-auto">
-            Have a question or need professional advice? Get in touch and our team will
-            respond as soon as possible.
-          </p>
-        </div>
-      </section>
+      <ContactHero />
 
       <section className="px-4 sm:px-8 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
         <div>
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }}>Get in Touch</h2>
+          <Reveal as="h2" className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }} x={-24} y={0}>
+            Get in Touch
+          </Reveal>
 
-          <div className="space-y-5 text-gray-700">
-            <div className="flex items-start gap-3">
-              <span style={{ color: 'var(--ncm-teal)' }}>📞</span>
-              <div>
-                <p className="font-semibold">Call Us</p>
-                <p className="text-sm">062 830 3044</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span style={{ color: 'var(--ncm-teal)' }}>💬</span>
-              <div>
-                <p className="font-semibold">WhatsApp</p>
-                <p className="text-sm">083 333 9349</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span style={{ color: 'var(--ncm-teal)' }}>✉️</span>
-              <div>
-                <p className="font-semibold">Email</p>
-                <p className="text-sm">admin@ncmca.co.za</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span style={{ color: 'var(--ncm-teal)' }}>🌐</span>
-              <div>
-                <p className="font-semibold">Website</p>
-                <p className="text-sm">www.ncmca.co.za</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span style={{ color: 'var(--ncm-teal)' }}>📍</span>
-              <div>
-                <p className="font-semibold">Locations</p>
-                <p className="text-sm">Durban, Umhlanga, Ballito and Richards Bay</p>
-              </div>
-            </div>
-          </div>
+          <RevealGroup className="space-y-5 text-gray-700" stagger={0.1}>
+            {CONTACT_ITEMS.map((item) => (
+              <RevealItem key={item.label} className="flex items-start gap-3" y={16}>
+                <span style={{ color: 'var(--ncm-teal)' }}>{item.icon}</span>
+                <div>
+                  <p className="font-semibold">{item.label}</p>
+                  <p className="text-sm">{item.value}</p>
+                </div>
+              </RevealItem>
+            ))}
+          </RevealGroup>
 
-          <p className="mt-10 italic text-gray-500 text-sm">
+          <Reveal
+            as="p"
+            className="mt-10 italic text-gray-500 text-sm"
+            delay={0.1}
+          >
             Delivering Excellence Through Integrity, Insight and Innovation.
-          </p>
+          </Reveal>
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }}>Send a Message</h2>
+          <Reveal as="h2" className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }} x={24} y={0}>
+            Send a Message
+          </Reveal>
 
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1 text-gray-700">Full Name</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
-                style={{ borderColor: 'var(--ncm-grey)' }}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">Email</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
+            <RevealGroup stagger={0.08} className="space-y-4">
+              <RevealItem y={18}>
+                <label htmlFor="name" className="block text-sm font-medium mb-1 text-gray-700">Full Name</label>
+                <motion.input
+                  id="name"
+                  name="name"
+                  type="text"
                   required
-                  value={formData.email}
+                  value={formData.name}
                   onChange={handleChange}
+                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  transition={{ duration: 0.2, ease: REVEAL_EASE }}
                   className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 />
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium mb-1 text-gray-700">Phone</label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
+              </RevealItem>
+
+              <RevealItem y={18} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">Email</label>
+                  <motion.input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                    transition={{ duration: 0.2, ease: REVEAL_EASE }}
+                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                    style={{ borderColor: 'var(--ncm-grey)' }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium mb-1 text-gray-700">Phone</label>
+                  <motion.input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                    transition={{ duration: 0.2, ease: REVEAL_EASE }}
+                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                    style={{ borderColor: 'var(--ncm-grey)' }}
+                  />
+                </div>
+              </RevealItem>
+
+              <RevealItem y={18}>
+                <label htmlFor="subject" className="block text-sm font-medium mb-1 text-gray-700">Subject</label>
+                <motion.input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  required
+                  value={formData.subject}
                   onChange={handleChange}
+                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  transition={{ duration: 0.2, ease: REVEAL_EASE }}
                   className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 />
-              </div>
-            </div>
+              </RevealItem>
 
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium mb-1 text-gray-700">Subject</label>
-              <input
-                id="subject"
-                name="subject"
-                type="text"
-                required
-                value={formData.subject}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
-                style={{ borderColor: 'var(--ncm-grey)' }}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-1 text-gray-700">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                rows="5"
-                required
-                value={formData.message}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
-                style={{ borderColor: 'var(--ncm-grey)' }}
-              />
-            </div>
+              <RevealItem y={18}>
+                <label htmlFor="message" className="block text-sm font-medium mb-1 text-gray-700">Message</label>
+                <motion.textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
+                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  transition={{ duration: 0.2, ease: REVEAL_EASE }}
+                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                  style={{ borderColor: 'var(--ncm-grey)' }}
+                />
+              </RevealItem>
+            </RevealGroup>
           </form>
 
           <div className="flex flex-col items-center gap-3 mt-6">
@@ -1104,14 +1238,24 @@ export default function Contact() {
               disabled={!formData.name || !formData.email || !formData.subject || !formData.message}
             />
             {status === 'success' && (
-              <p className="text-green-600 text-sm text-center">
+              <motion.p
+                className="text-green-600 text-sm text-center"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: REVEAL_EASE }}
+              >
                 Message sent successfully! We'll be in touch shortly.
-              </p>
+              </motion.p>
             )}
             {status === 'error' && (
-              <p className="text-red-600 text-sm text-center">
+              <motion.p
+                className="text-red-600 text-sm text-center"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: REVEAL_EASE }}
+              >
                 Something went wrong. Please try again or contact us directly.
-              </p>
+              </motion.p>
             )}
           </div>
         </div>
