@@ -1,7 +1,12 @@
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
+import emailjs from '@emailjs/browser'
 import { BloomEffect, EffectComposer, EffectPass, RenderPass, SMAAEffect, SMAAPreset } from 'postprocessing'
 import * as THREE from 'three'
+
+const EMAILJS_SERVICE_ID = 'service_84h3ijq'
+const EMAILJS_TEMPLATE_ID = 'template_uiqsv7j'
+const EMAILJS_PUBLIC_KEY = '4fhuYl5hFBniQ1LVE'
 
 const DEFAULT_EFFECT_OPTIONS = {
   onSpeedUp: () => {},
@@ -1175,6 +1180,49 @@ const heroHyperspeedOptions = {
 export default function Careers() {
   const openings = []
 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    position: '',
+    message: '',
+  })
+  const [status, setStatus] = useState(null)
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setStatus('sending')
+
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      position: formData.position,
+      message: formData.message,
+      time: new Date().toLocaleString('en-ZA', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    }
+
+    emailjs
+      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, {
+        publicKey: EMAILJS_PUBLIC_KEY,
+      })
+      .then(() => {
+        setStatus('success')
+        setFormData({ name: '', email: '', phone: '', position: '', message: '' })
+      })
+      .catch((err) => {
+        console.error('EmailJS error:', err)
+        setStatus('error')
+      })
+  }
+
   return (
     <div className="text-black">
       <section className="relative px-4 sm:px-8 py-24 sm:py-32 text-center text-white overflow-hidden" style={{ backgroundColor: '#000' }}>
@@ -1230,30 +1278,141 @@ export default function Careers() {
                     <h3 className="font-semibold">{job.title}</h3>
                     <p className="text-sm text-gray-500">{job.location} · {job.type}</p>
                   </div>
-                  <Link
-                    to="/contact"
+                  <a
+                    href="#apply"
                     className="text-sm font-medium"
                     style={{ color: 'var(--ncm-teal)' }}
                   >
                     Apply →
-                  </Link>
+                  </a>
                 </div>
               ))}
             </div>
           ) : (
             <p className="text-center text-gray-600">
               We don't have any open positions right now, but we're always happy
-              to hear from talented people. Send us your CV and we'll keep it on
-              file for future opportunities.
+              to hear from talented people. Fill in the form below and we'll keep
+              your details on file for future opportunities.
             </p>
           )}
         </div>
       </section>
 
+      <section id="apply" className="px-4 sm:px-8 py-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
+          Apply Now
+        </h2>
+        <p className="text-center text-gray-600 mb-8 text-sm">
+          Fill in your details below. We'll be in touch if there's a suitable opportunity.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-1 text-gray-700">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              style={{ borderColor: 'var(--ncm-grey)' }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                style={{ borderColor: 'var(--ncm-grey)' }}
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium mb-1 text-gray-700">Phone</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                style={{ borderColor: 'var(--ncm-grey)' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="position" className="block text-sm font-medium mb-1 text-gray-700">Position Applying For</label>
+            <input
+              id="position"
+              name="position"
+              type="text"
+              required
+              placeholder="e.g. Trainee Accountant, General Application"
+              value={formData.position}
+              onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              style={{ borderColor: 'var(--ncm-grey)' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="message" className="block text-sm font-medium mb-1 text-gray-700">Message</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              placeholder="Tell us a bit about yourself and why you'd like to join NCM Inc"
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              style={{ borderColor: 'var(--ncm-grey)' }}
+            />
+          </div>
+
+          <div
+            className="text-sm rounded-md px-4 py-3"
+            style={{ backgroundColor: '#f0f7f6', border: '1px solid #cfe8e4', color: 'var(--ncm-teal)' }}
+          >
+            📎 Please email your CV directly to <strong>info@ncmca.co.za</strong> along
+            with this application, referencing the position you're applying for.
+          </div>
+
+          <button
+            type="submit"
+            disabled={status === 'sending'}
+            className="w-full py-3 rounded-md font-semibold text-white disabled:opacity-60"
+            style={{ backgroundColor: 'var(--ncm-teal)' }}
+          >
+            {status === 'sending' ? 'Sending...' : 'Submit Application'}
+          </button>
+
+          {status === 'success' && (
+            <p className="text-green-600 text-sm text-center">
+              Application sent successfully! Don't forget to email your CV separately.
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="text-red-600 text-sm text-center">
+              Something went wrong. Please try again or email us directly.
+            </p>
+          )}
+        </form>
+      </section>
+
       <section className="px-4 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
-        <h2 className="text-2xl md:text-3xl font-bold mb-4">Interested in Joining Us?</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">Have Questions First?</h2>
         <p className="mb-8 max-w-xl mx-auto">
-          Send us your CV and a short introduction, and we'll be in touch if a suitable opportunity arises.
+          Reach out to us directly if you'd like to know more before applying.
         </p>
         <Link
           to="/contact"
