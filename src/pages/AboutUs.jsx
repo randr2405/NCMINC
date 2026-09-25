@@ -525,35 +525,35 @@ export default function AboutUs() {
     <div className="text-black overflow-x-hidden">
       <section className="relative bg-black text-white px-6 sm:px-8 py-20 sm:py-24 text-center overflow-hidden">
         <div className="absolute inset-0" aria-hidden="true">
-          <LightTunnel
+                    <LightTunnel
             cableColor="#14b8a6"
             pulseColor="#5eead4"
             tunnelColor="#0f766e"
             tunnelOpacity={0}
-            speed={0.1}
+            speed={0.025}
             flowDirection="outward"
-            pulseSpeed={2}
+            pulseSpeed={0.6}
             pulseLength={0.28}
             pulseBlend={1}
             pulseWidth={1}
-            cableCount={20}
-            thickness={0.35}
-            rimWidth={0.15}
-            waviness={0.3}
-            sway={0.5}
-            size={1}
+            cableCount={16}
+            thickness={0.3}
+            rimWidth={0.12}
+            waviness={0.2}
+            sway={0.3}
+            size={0.55}
             centerX={0}
             centerY={0}
-            glow={1.2}
-            fadeNear={0.5}
-            fadeFar={2}
-            brightness={1.3}
+            glow={0.7}
+            fadeNear={0.35}
+            fadeFar={1.3}
+            brightness={0.7}
             colorVariance
             grain
             grainIntensity={0.05}
-            opacity={0.85}
+            opacity={0.5}
             mouseInteraction
-            mouseStrength={0.1}
+            mouseStrength={0.06}
           />
         </div>
         <div className="relative">
