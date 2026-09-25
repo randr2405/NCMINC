@@ -1226,7 +1226,12 @@ export default function Careers() {
   return (
     <div className="text-black">
       <section className="relative px-4 sm:px-8 py-24 sm:py-32 text-center text-white overflow-hidden" style={{ backgroundColor: '#000' }}>
-        <Hyperspeed effectOptions={heroHyperspeedOptions} />
+        <div className="absolute inset-y-0 left-0 w-1/2 md:w-2/5 overflow-hidden">
+          <Hyperspeed effectOptions={heroHyperspeedOptions} />
+        </div>
+        <div className="absolute inset-y-0 right-0 w-1/2 md:w-2/5 overflow-hidden" style={{ transform: 'scaleX(-1)' }}>
+          <Hyperspeed effectOptions={heroHyperspeedOptions} />
+        </div>
         <div className="relative z-10 flex justify-center">
           <div
             className="max-w-md px-8 py-10 rounded-2xl"
