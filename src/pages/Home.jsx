@@ -2,12 +2,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Renderer, Program, Mesh, Triangle } from 'ogl'
 
-/* ------------------------------------------------------------------ */
-/* MoltenMetal — inlined so Home.jsx stays a single file.              */
-/* Retinted from its original purple/pink defaults to the NCM teal     */
-/* palette (deep teal → bright teal → cream) so it reads as a subtle,  */
-/* on-brand animated backdrop rather than a generic gradient blob.     */
-/* ------------------------------------------------------------------ */
 
 const hexToRgb = hex => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -522,25 +516,25 @@ export default function Home() {
       >
         {/* Animated teal molten background, replacing the old static glow */}
         <div className="absolute inset-0" aria-hidden="true">
-          <MoltenMetal
-            color1="#0d2e2a"
-            color2="#0f766e"
+                    <MoltenMetal
+            color1="#134e4a"
+            color2="#14b8a6"
             color3="#f2ede4"
             speed={0.3}
             scale={4}
             detail={3}
-            glow={1.4}
-            coreSize={0.1}
+            glow={1.8}
+            coreSize={0.14}
             swirl={1}
             fold={-0.2}
-            blackPoint={0.05}
-            brightness={1.1}
+            blackPoint={0.02}
+            brightness={1.6}
             colorMode="molten"
             grain
             grainIntensity={0.04}
             mouseInteraction
             mouseStrength={0.25}
-            opacity={0.55}
+            opacity={0.85}
           />
         </div>
 
