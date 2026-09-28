@@ -551,11 +551,18 @@ export default function ServicePageLayout({
           background-color: rgba(94, 234, 212, 0.08);
           box-shadow: 0 14px 30px rgba(20, 184, 166, 0.18);
         }
+        @media (hover: none) {
+          .sp-pill:hover,
+          .sp-item:hover,
+          .sp-value:hover {
+            transform: none;
+          }
+        }
       `}</style>
 
       <section
         ref={heroRef}
-        className="relative px-6 sm:px-8 py-20 sm:py-28 text-center text-white overflow-hidden"
+        className="relative px-5 sm:px-8 py-14 sm:py-28 text-center text-white overflow-hidden"
         style={{ backgroundColor: 'var(--ncm-black)' }}
       >
         <div
@@ -598,7 +605,7 @@ export default function ServicePageLayout({
           </p>
 
           <h1
-            className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 leading-tight transition-all duration-700 ease-out"
+            className="text-[1.75rem] sm:text-5xl md:text-6xl font-bold mb-4 leading-tight break-words transition-all duration-700 ease-out"
             style={{
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(16px)',
@@ -636,7 +643,7 @@ export default function ServicePageLayout({
 
           {intro && (
             <p
-              className="max-w-2xl mx-auto mt-8 text-gray-300 text-base sm:text-lg transition-all duration-700 ease-out"
+              className="max-w-2xl mx-auto mt-6 sm:mt-8 text-gray-300 text-sm sm:text-lg transition-all duration-700 ease-out"
               style={{
                 opacity: heroIn ? 1 : 0,
                 transform: heroIn ? 'none' : 'translateY(16px)',
@@ -649,7 +656,7 @@ export default function ServicePageLayout({
 
           {highlights.length > 0 && (
             <div
-              className="mt-10 flex flex-wrap justify-center gap-3 transition-all duration-700 ease-out"
+              className="mt-8 sm:mt-10 flex flex-wrap justify-center gap-2 sm:gap-3 transition-all duration-700 ease-out"
               style={{
                 opacity: heroIn ? 1 : 0,
                 transform: heroIn ? 'none' : 'translateY(16px)',
@@ -659,7 +666,7 @@ export default function ServicePageLayout({
               {highlights.map((h, i) => (
                 <span
                   key={h}
-                  className="sp-pill px-4 py-2 rounded-full text-sm font-medium"
+                  className="sp-pill px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium"
                   style={{
                     backgroundColor: 'rgba(94, 234, 212, 0.12)',
                     border: '1px solid rgba(94, 234, 212, 0.4)',
@@ -674,7 +681,7 @@ export default function ServicePageLayout({
           )}
 
           <div
-            className="mt-10 flex flex-col sm:flex-row justify-center gap-4 transition-all duration-700 ease-out"
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto transition-all duration-700 ease-out"
             style={{
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(16px)',
@@ -683,14 +690,14 @@ export default function ServicePageLayout({
           >
             <Link
               to="/contact"
-              className="px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+              className="text-center px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
               style={{ backgroundColor: 'var(--ncm-teal)' }}
             >
               Get in Touch
             </Link>
             <Link
               to="/"
-              className="px-6 py-3 rounded-md font-semibold border transition-colors duration-200 hover:bg-white/10"
+              className="text-center px-6 py-3 rounded-md font-semibold border transition-colors duration-200 hover:bg-white/10"
               style={{ borderColor: 'var(--ncm-grey)', color: 'var(--ncm-grey)' }}
             >
               Back to Home
@@ -700,7 +707,7 @@ export default function ServicePageLayout({
       </section>
 
       {sections.length > 0 && (
-        <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
+        <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-6xl mx-auto">
           <Reveal
             as="h2"
             className="text-2xl sm:text-3xl font-bold mb-2 text-center"
@@ -708,11 +715,11 @@ export default function ServicePageLayout({
           >
             What We Offer
           </Reveal>
-          <Reveal delay={80} className="text-center text-gray-600 mb-12">
+          <Reveal delay={80} className="text-center text-gray-600 mb-8 sm:mb-12">
             A complete, structured approach across every stage of the service.
           </Reveal>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {sections.map((section, i) => (
               <Reveal
                 key={section?.title || i}
@@ -720,7 +727,7 @@ export default function ServicePageLayout({
                 dir={i % 2 === 0 ? 'left' : 'right'}
                 className="h-full"
               >
-                <SpotlightCard className="h-full rounded-lg border p-6" spotlightColor="rgba(20, 184, 166, 0.22)">
+                <SpotlightCard className="h-full rounded-lg border p-5 sm:p-6" spotlightColor="rgba(20, 184, 166, 0.22)">
                   <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)' }}>
                     {section?.title}
                   </h3>
@@ -744,7 +751,7 @@ export default function ServicePageLayout({
 
       {valuePoints.length > 0 && (
         <section
-          className="relative px-6 sm:px-8 py-16 overflow-hidden"
+          className="relative px-5 sm:px-8 py-12 sm:py-16 overflow-hidden"
           style={{
             backgroundColor: 'var(--ncm-black)',
             backgroundImage:
@@ -755,11 +762,11 @@ export default function ServicePageLayout({
             <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center text-white">
               The Value You <span style={{ color: '#5eead4' }}>Gain</span>
             </Reveal>
-            <Reveal delay={80} className="text-center text-gray-300 mb-12">
+            <Reveal delay={80} className="text-center text-gray-300 mb-8 sm:mb-12">
               Tangible outcomes that support your business, every step of the way.
             </Reveal>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
               {valuePoints.map((point, i) => (
                 <Reveal key={point} delay={(i % 4) * 80} dir="scale">
                   <div
@@ -792,7 +799,10 @@ export default function ServicePageLayout({
         </section>
       )}
 
-      <section className="px-6 sm:px-8 py-16 text-white text-center" style={{ backgroundColor: 'var(--ncm-black)' }}>
+      <section
+        className="px-5 sm:px-8 py-12 sm:py-16 text-white text-center"
+        style={{ backgroundColor: 'var(--ncm-black)' }}
+      >
         <Reveal as="h2" className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
           Ready to Get Started?
         </Reveal>
