@@ -150,12 +150,14 @@ function MoltenMetal({
     const container = containerRef.current
     if (!container) return
 
+    const compact = window.innerWidth < 768
+
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 2),
     })
 
     const gl = renderer.gl
@@ -541,10 +543,15 @@ export default function Home() {
         .card-spotlight:focus-within::before {
           opacity: 1;
         }
+        @media (hover: none) {
+          .card-spotlight:hover::before {
+            opacity: 0;
+          }
+        }
       `}</style>
 
       <section
-        className="relative px-6 sm:px-8 py-20 sm:py-28 text-center text-white overflow-hidden"
+        className="relative px-4 sm:px-8 py-16 sm:py-24 md:py-28 text-center text-white overflow-hidden"
         style={{ backgroundColor: 'var(--ncm-black)' }}
       >
         <div className="absolute inset-0" aria-hidden="true">
@@ -572,7 +579,7 @@ export default function Home() {
 
         <div className="relative">
           <p
-            className="uppercase tracking-widest text-xs sm:text-sm mb-4 transition-all duration-700 ease-out"
+            className="uppercase tracking-wider sm:tracking-widest text-[11px] sm:text-sm mb-4 transition-all duration-700 ease-out"
             style={{
               color: 'var(--ncm-grey)',
               opacity: heroIn ? 1 : 0,
@@ -583,7 +590,7 @@ export default function Home() {
           </p>
 
           <h1
-            className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 leading-tight transition-all duration-700 ease-out"
+            className="text-[1.75rem] sm:text-5xl md:text-6xl font-bold mb-4 leading-tight transition-all duration-700 ease-out"
             style={{
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(16px)',
@@ -610,7 +617,7 @@ export default function Home() {
           </h1>
 
           <p
-            className="max-w-2xl mx-auto mt-6 text-gray-300 text-base sm:text-lg transition-all duration-700 ease-out"
+            className="max-w-2xl mx-auto mt-5 sm:mt-6 text-gray-300 text-sm sm:text-lg transition-all duration-700 ease-out"
             style={{
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(16px)',
@@ -622,7 +629,7 @@ export default function Home() {
           </p>
 
           <div
-            className="mt-10 flex flex-col sm:flex-row justify-center gap-4 transition-all duration-700 ease-out"
+            className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4 max-w-xs sm:max-w-none mx-auto transition-all duration-700 ease-out"
             style={{
               opacity: heroIn ? 1 : 0,
               transform: heroIn ? 'none' : 'translateY(16px)',
@@ -631,14 +638,14 @@ export default function Home() {
           >
             <Link
               to="/contact"
-              className="px-6 py-3 rounded-md font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+              className="px-6 py-3 rounded-md font-semibold text-white text-center transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
               style={{ backgroundColor: 'var(--ncm-teal)' }}
             >
               Get in Touch
             </Link>
             <Link
               to="/about-us"
-              className="px-6 py-3 rounded-md font-semibold border transition-colors duration-200 hover:bg-white/10"
+              className="px-6 py-3 rounded-md font-semibold border text-center transition-colors duration-200 hover:bg-white/10"
               style={{ borderColor: 'var(--ncm-grey)', color: 'var(--ncm-grey)' }}
             >
               Learn More About Us
@@ -647,9 +654,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-14 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-14 text-center" style={{ backgroundColor: 'var(--ncm-grey)' }}>
         <Reveal className="max-w-3xl mx-auto">
-          <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+          <p className="text-gray-700 text-sm sm:text-lg leading-relaxed">
             For{' '}
             <span className="font-semibold" style={{ color: 'var(--ncm-black)' }}>
               <Counter end={40} suffix="+" />
@@ -662,22 +669,22 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
+      <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-6xl mx-auto">
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
           Our Professional Services
         </Reveal>
-        <Reveal delay={80} className="text-center text-gray-600 mb-12">
+        <Reveal delay={80} className="text-center text-gray-600 mb-8 sm:mb-12 text-sm sm:text-base">
           An integrated range of professional services under one trusted roof.
         </Reveal>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {services.map((s, i) => (
             <Reveal key={s.path} delay={(i % 3) * 90} className="h-full">
               <SpotlightCard
                 className="h-full rounded-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 spotlightColor="rgba(20, 184, 166, 0.28)"
               >
-                <Link to={s.path} className="group flex flex-col h-full p-6" style={{ borderColor: 'var(--ncm-grey)' }}>
+                <Link to={s.path} className="group flex flex-col h-full p-5 sm:p-6" style={{ borderColor: 'var(--ncm-grey)' }}>
                   <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--ncm-black)' }}>
                     {s.title}
                   </h3>
@@ -685,12 +692,12 @@ export default function Home() {
                     {s.items.map((item) => (
                       <li key={item} className="flex items-start gap-2">
                         <span style={{ color: 'var(--ncm-teal)' }}>•</span>
-                        <span>{item}</span>
+                        <span className="min-w-0 break-words">{item}</span>
                       </li>
                     ))}
                   </ul>
                   <span
-                    className="inline-flex items-center gap-1 mt-4 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
+                    className="inline-flex items-center gap-1 mt-4 py-1 text-sm font-medium transition-transform duration-200 group-hover:translate-x-1"
                     style={{ color: 'var(--ncm-teal)' }}
                   >
                     Learn more →
@@ -702,7 +709,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 text-white text-center" style={{ backgroundColor: 'var(--ncm-black)' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16 text-white text-center" style={{ backgroundColor: 'var(--ncm-black)' }}>
         <Reveal as="h2" className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
           More Than Compliance. A Professional Partner.
         </Reveal>
