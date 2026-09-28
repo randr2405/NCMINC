@@ -533,6 +533,14 @@ function SlideTransition({ children, direction, onHeightReady }) {
     if (containerRef.current) onHeightReady(containerRef.current.offsetHeight)
   }, [children, onHeightReady])
 
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => onHeightReady(el.offsetHeight))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [onHeightReady])
+
   return (
     <motion.div
       ref={containerRef}
@@ -863,6 +871,7 @@ export default function AboutUs() {
           transition: all 350ms;
           border-radius: 0.25rem;
           padding: 0.25rem 0.5rem;
+          min-height: 44px;
           color: #a3a3a3;
           cursor: pointer;
         }
@@ -879,6 +888,8 @@ export default function AboutUs() {
           font-weight: 500;
           letter-spacing: -0.025em;
           padding: 0.5rem 1.1rem;
+          min-height: 44px;
+          min-width: 88px;
           cursor: pointer;
         }
         .next-button:hover { background-color: #0d5c55; }
@@ -906,9 +917,17 @@ export default function AboutUs() {
         }
         .step-connector-inner { position: absolute; left: 0; top: 0; height: 100%; }
         .check-icon { height: 1rem; width: 1rem; color: #fff; }
+        @media (max-width: 640px) {
+          .outer-container { padding: 0; }
+          .step-circle-container { border-radius: 1.25rem; }
+          .step-indicator-row { padding: 1.25rem; }
+          .step-default { padding-left: 1.25rem; padding-right: 1.25rem; }
+          .footer-container { padding-left: 1.25rem; padding-right: 1.25rem; padding-bottom: 1.25rem; }
+          .footer-nav { margin-top: 1.25rem; }
+        }
       `}</style>
 
-      <section className="relative bg-black text-white px-6 sm:px-8 py-20 sm:py-24 text-center overflow-hidden">
+      <section className="relative bg-black text-white px-5 sm:px-8 py-14 sm:py-24 text-center overflow-hidden">
         <div className="absolute inset-0" aria-hidden="true">
           <LightTunnel
             cableColor="#14b8a6"
@@ -943,19 +962,19 @@ export default function AboutUs() {
         </div>
         <div className="relative">
           <h1
-            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 transition-all duration-700 ease-out"
+            className="text-[1.75rem] sm:text-4xl md:text-5xl font-bold mb-4 leading-tight transition-all duration-700 ease-out"
             style={{ opacity: heroIn ? 1 : 0, transform: heroIn ? 'none' : 'translateY(16px)' }}
           >
             About NCM Inc
           </h1>
           <p
-            className="text-lg md:text-xl text-gray-300 transition-all duration-700 ease-out"
+            className="text-base sm:text-lg md:text-xl text-gray-300 transition-all duration-700 ease-out"
             style={{ opacity: heroIn ? 1 : 0, transform: heroIn ? 'none' : 'translateY(16px)', transitionDelay: '120ms' }}
           >
             A Legacy of Excellence. A Future of Innovation.
           </p>
           <p
-            className="max-w-2xl mx-auto mt-6 text-gray-300 transition-all duration-700 ease-out"
+            className="max-w-2xl mx-auto mt-5 sm:mt-6 text-sm sm:text-base text-gray-300 transition-all duration-700 ease-out"
             style={{ opacity: heroIn ? 1 : 0, transform: heroIn ? 'none' : 'translateY(16px)', transitionDelay: '220ms' }}
           >
             For more than 40 years, NCM Inc Chartered Accountants (SA) &amp; Registered Auditors
@@ -965,32 +984,35 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto">
+      <section className="px-5 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto">
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Our Story
         </Reveal>
-        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
+        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-5 sm:mb-6">
           Four Decades of Professional Excellence
         </Reveal>
-        <Reveal delay={100} className="mb-4 text-gray-700">
+        <Reveal delay={100} className="mb-4 text-sm sm:text-base text-gray-700">
           NCM Inc's story is one of resilience, opportunity, professional excellence and
           continuous evolution. Established more than four decades ago, NCM Inc was among
           South Africa's pioneering Chartered Accounting practices, developing a reputation
           for professional service, technical expertise and trusted client relationships.
         </Reveal>
-        <Reveal delay={160} className="mb-4 text-gray-700">
+        <Reveal delay={160} className="mb-4 text-sm sm:text-base text-gray-700">
           Over the years, NCM Inc has supported businesses, entrepreneurs, families and
           communities through changing economic conditions, evolving legislation and an
           increasingly complex regulatory environment.
         </Reveal>
-        <Reveal delay={220} className="mb-8 text-gray-700">
+        <Reveal delay={220} className="mb-8 text-sm sm:text-base text-gray-700">
           Today, NCM Inc has entered a new chapter under new management, preserving the
           professional values and reputation developed over more than 40 years while
           introducing modern systems, technology, expanded service offerings and a renewed
           focus on client experience.
         </Reveal>
         <Reveal delay={280}>
-          <blockquote className="border-l-4 pl-6 italic text-gray-800" style={{ borderColor: 'var(--ncm-teal)' }}>
+          <blockquote
+            className="border-l-4 pl-4 sm:pl-6 italic text-sm sm:text-base text-gray-800"
+            style={{ borderColor: 'var(--ncm-teal)' }}
+          >
             Our heritage gives us experience.<br />
             Our people give us expertise.<br />
             Our technology gives us agility.<br />
@@ -999,19 +1021,19 @@ export default function AboutUs() {
         </Reveal>
       </section>
 
-      <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: '#f0f7f6' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16" style={{ backgroundColor: '#f0f7f6' }}>
         <div className="max-w-5xl mx-auto">
           <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
             Our Values
           </Reveal>
-          <Reveal delay={60} className="text-center text-gray-600 mb-10">
+          <Reveal delay={60} className="text-center text-gray-600 mb-8 sm:mb-10">
             What Guides Everything We Do
           </Reveal>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {values.map((v, i) => (
               <Reveal key={v.title} delay={(i % 3) * 90} scale className="h-full">
                 <SpotlightCard
-                  className="h-full bg-white p-6 rounded-lg shadow-sm border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  className="h-full bg-white p-5 sm:p-6 rounded-lg shadow-sm border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                   spotlightColor="rgba(20, 184, 166, 0.22)"
                 >
                   <h3 className="font-semibold mb-2" style={{ color: 'var(--ncm-black)' }}>{v.title}</h3>
@@ -1023,14 +1045,14 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto">
+      <section className="px-5 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto">
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Our Leadership
         </Reveal>
-        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
+        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-5 sm:mb-6">
           Experienced Professionals. Forward-Thinking Leadership.
         </Reveal>
-        <Reveal delay={100} className="mb-6 text-gray-700">
+        <Reveal delay={100} className="mb-6 text-sm sm:text-base text-gray-700">
           NCM Inc is led by a team committed to combining professional expertise, commercial
           understanding and modern thinking. Under the firm's new management, NCM Inc is
           focused on creating a professional practice that is responsive to the changing
@@ -1038,7 +1060,11 @@ export default function AboutUs() {
         </Reveal>
         <div className="grid md:grid-cols-2 gap-x-6 gap-y-2">
           {leadership.map((item, i) => (
-            <Reveal key={item} delay={140 + (i % 4) * 60} className="flex items-center gap-2 text-gray-700">
+            <Reveal
+              key={item}
+              delay={140 + (i % 4) * 60}
+              className="flex items-center gap-2 text-sm sm:text-base text-gray-700"
+            >
               <span
                 className="inline-block w-1.5 h-1.5 rounded-full shrink-0"
                 style={{ backgroundColor: 'var(--ncm-teal)' }}
@@ -1049,15 +1075,15 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 text-white" style={{ backgroundColor: '#08201d' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16 text-white" style={{ backgroundColor: '#08201d' }}>
         <div className="max-w-5xl mx-auto">
           <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: '#5eead4' }}>
             Why NCM
           </Reveal>
-          <Reveal delay={60} className="text-center mb-10" style={{ color: '#cdeae6' }}>
+          <Reveal delay={60} className="text-center mb-8 sm:mb-10" style={{ color: '#cdeae6' }}>
             More Than Compliance. A Professional Partner.
           </Reveal>
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {whyNCM.map((w, i) => (
               <Reveal key={w.title} delay={(i % 2) * 100} scale className="h-full">
                 <SpotlightCard
@@ -1073,8 +1099,8 @@ export default function AboutUs() {
         </div>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto text-center">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-10" style={{ color: 'var(--ncm-teal)' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto text-center">
+        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-10" style={{ color: 'var(--ncm-teal)' }}>
           Our Approach
         </Reveal>
         <Reveal scale>
@@ -1108,40 +1134,43 @@ export default function AboutUs() {
         </Reveal>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 max-w-4xl mx-auto text-center">
+      <section className="px-5 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto text-center">
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
           Building the Future
         </Reveal>
-        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-6">
+        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-5 sm:mb-6">
           Our Legacy Is Our Foundation. Our Future Is Our Opportunity.
         </Reveal>
-        <Reveal delay={100} className="mb-4 text-gray-700">
+        <Reveal delay={100} className="mb-4 text-sm sm:text-base text-gray-700">
           NCM Inc is proud of its history. More than four decades of professional service
           have created a foundation of experience, relationships and knowledge that we
           intend to carry forward.
         </Reveal>
-        <Reveal delay={160} className="mb-4 text-gray-700">
+        <Reveal delay={160} className="mb-4 text-sm sm:text-base text-gray-700">
           But we also recognise that the professional services environment is changing
           rapidly. Technology, regulation, globalisation and changing client expectations
           are reshaping the way businesses operate. NCM Inc is responding to that change.
         </Reveal>
-        <Reveal delay={220} className="mb-4 text-gray-700">
+        <Reveal delay={220} className="mb-4 text-sm sm:text-base text-gray-700">
           We are investing in people, technology, systems and service capabilities to
           create a professional practice that is modern, responsive and future-focused.
         </Reveal>
-        <Reveal delay={280} className="font-semibold text-gray-800">
+        <Reveal delay={280} className="font-semibold text-sm sm:text-base text-gray-800">
           Our ambition is not simply to continue the NCM Inc story. It is to build its next chapter.
         </Reveal>
       </section>
 
-      <section className="px-6 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
+      <section
+        className="px-5 sm:px-8 py-12 sm:py-16 text-center text-white"
+        style={{ backgroundColor: 'var(--ncm-teal)' }}
+      >
         <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2">
           Our Promise
         </Reveal>
-        <Reveal delay={60} className="text-lg mb-6">
+        <Reveal delay={60} className="text-base sm:text-lg mb-6">
           Trusted Advice. Smart Solutions. Stronger Businesses.
         </Reveal>
-        <Reveal delay={120} className="max-w-2xl mx-auto mb-2">
+        <Reveal delay={120} className="max-w-2xl mx-auto mb-2 text-sm sm:text-base">
           Whether you are an established corporation, growing business, entrepreneur, family,
           trust or individual, we are committed to providing professional solutions tailored
           to your needs.
@@ -1155,7 +1184,7 @@ export default function AboutUs() {
             Get in Touch
           </Link>
         </Reveal>
-        <Reveal delay={240} className="font-semibold mt-8">
+        <Reveal delay={240} className="font-semibold mt-8 text-sm sm:text-base">
           NCM Inc Chartered Accountants (SA) &amp; Registered Auditors
         </Reveal>
         <Reveal delay={280} className="text-sm text-gray-100">
