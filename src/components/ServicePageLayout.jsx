@@ -489,15 +489,16 @@ function useParallax() {
 }
 
 export default function ServicePageLayout({
-  title,
-  tagline,
-  intro,
+  title = '',
+  tagline = '',
+  intro = '',
   highlights = [],
   sections = [],
   valuePoints = [],
 }) {
   const [heroIn, setHeroIn] = useState(false)
   const [heroRef, heroOffset] = useParallax()
+  const safeTitle = typeof title === 'string' ? title : ''
 
   useEffect(() => {
     const t = setTimeout(() => setHeroIn(true), 60)
@@ -542,11 +543,13 @@ export default function ServicePageLayout({
           color: var(--ncm-teal);
         }
         .sp-value {
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
+          transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
         }
         .sp-value:hover {
           transform: translateY(-4px);
-          box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+          border-color: rgba(94, 234, 212, 0.6);
+          background-color: rgba(94, 234, 212, 0.08);
+          box-shadow: 0 14px 30px rgba(20, 184, 166, 0.18);
         }
       `}</style>
 
@@ -602,7 +605,7 @@ export default function ServicePageLayout({
               transitionDelay: '100ms',
             }}
           >
-            {title}
+            {safeTitle}
           </h1>
 
           {tagline && (
@@ -614,7 +617,10 @@ export default function ServicePageLayout({
                 transitionDelay: '220ms',
               }}
             >
-              <p className="text-base sm:text-lg font-medium" style={{ color: '#5eead4', textShadow: '0 2px 18px rgba(0,0,0,0.55)' }}>
+              <p
+                className="text-base sm:text-lg font-medium"
+                style={{ color: '#5eead4', textShadow: '0 2px 18px rgba(0,0,0,0.55)' }}
+              >
                 {tagline}
               </p>
               <span
@@ -695,7 +701,11 @@ export default function ServicePageLayout({
 
       {sections.length > 0 && (
         <section className="px-6 sm:px-8 py-16 max-w-6xl mx-auto">
-          <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
+          <Reveal
+            as="h2"
+            className="text-2xl sm:text-3xl font-bold mb-2 text-center"
+            style={{ color: 'var(--ncm-teal)' }}
+          >
             What We Offer
           </Reveal>
           <Reveal delay={80} className="text-center text-gray-600 mb-12">
@@ -704,16 +714,21 @@ export default function ServicePageLayout({
 
           <div className="grid sm:grid-cols-2 gap-6">
             {sections.map((section, i) => (
-              <Reveal key={section.title} delay={(i % 2) * 100} dir={i % 2 === 0 ? 'left' : 'right'} className="h-full">
+              <Reveal
+                key={section?.title || i}
+                delay={(i % 2) * 100}
+                dir={i % 2 === 0 ? 'left' : 'right'}
+                className="h-full"
+              >
                 <SpotlightCard className="h-full rounded-lg border p-6" spotlightColor="rgba(20, 184, 166, 0.22)">
-                  <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)', borderColor: 'var(--ncm-grey)' }}>
-                    {section.title}
+                  <h3 className="font-semibold text-lg mb-2" style={{ color: 'var(--ncm-black)' }}>
+                    {section?.title}
                   </h3>
-                  {section.description && (
+                  {section?.description && (
                     <p className="text-sm text-gray-600 mb-3">{section.description}</p>
                   )}
                   <ul className="text-sm text-gray-600 space-y-1.5">
-                    {section.items.map(item => (
+                    {(section?.items || []).map(item => (
                       <li key={item} className="sp-item flex items-start gap-2">
                         <span style={{ color: 'var(--ncm-teal)' }}>•</span>
                         <span>{item}</span>
@@ -728,12 +743,19 @@ export default function ServicePageLayout({
       )}
 
       {valuePoints.length > 0 && (
-        <section className="px-6 sm:px-8 py-16" style={{ backgroundColor: 'var(--ncm-grey)' }}>
-          <div className="max-w-5xl mx-auto">
-            <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-black)' }}>
-              The Value You Gain
+        <section
+          className="relative px-6 sm:px-8 py-16 overflow-hidden"
+          style={{
+            backgroundColor: 'var(--ncm-black)',
+            backgroundImage:
+              'radial-gradient(60% 50% at 15% 0%, rgba(20,184,166,0.18), transparent 70%), radial-gradient(50% 45% at 90% 100%, rgba(15,118,110,0.22), transparent 70%)',
+          }}
+        >
+          <div className="relative max-w-5xl mx-auto">
+            <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2 text-center text-white">
+              The Value You <span style={{ color: '#5eead4' }}>Gain</span>
             </Reveal>
-            <Reveal delay={80} className="text-center text-gray-600 mb-12">
+            <Reveal delay={80} className="text-center text-gray-300 mb-12">
               Tangible outcomes that support your business, every step of the way.
             </Reveal>
 
@@ -741,23 +763,27 @@ export default function ServicePageLayout({
               {valuePoints.map((point, i) => (
                 <Reveal key={point} delay={(i % 4) * 80} dir="scale">
                   <div
-                    className="sp-value flex items-start gap-3 rounded-lg p-4 bg-white border"
-                    style={{ borderColor: 'rgba(15, 118, 110, 0.2)' }}
+                    className="sp-value flex items-start gap-3 rounded-lg p-4"
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(94, 234, 212, 0.22)',
+                      backdropFilter: 'blur(6px)',
+                    }}
                   >
                     <span
                       className="flex items-center justify-center rounded-full flex-shrink-0"
                       style={{
                         width: 28,
                         height: 28,
-                        backgroundColor: 'rgba(15, 118, 110, 0.12)',
-                        color: 'var(--ncm-teal)',
+                        backgroundColor: 'rgba(94, 234, 212, 0.15)',
+                        color: '#5eead4',
                         fontSize: 14,
                         fontWeight: 700,
                       }}
                     >
                       {i + 1}
                     </span>
-                    <span className="text-sm text-gray-700 pt-0.5">{point}</span>
+                    <span className="text-sm text-gray-200 pt-0.5">{point}</span>
                   </div>
                 </Reveal>
               ))}
@@ -771,8 +797,8 @@ export default function ServicePageLayout({
           Ready to Get Started?
         </Reveal>
         <Reveal delay={80} className="max-w-2xl mx-auto text-gray-300 mb-8 text-sm sm:text-base">
-          Speak to our team about how {title.toLowerCase()} can support your business, backed by{' '}
-          <Counter end={40} suffix="+" /> years of experience.
+          Speak to our team about how {safeTitle ? safeTitle.toLowerCase() : 'our services'} can support your
+          business, backed by <Counter end={40} suffix="+" /> years of experience.
         </Reveal>
         <Reveal delay={160}>
           <Link
