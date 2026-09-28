@@ -68,6 +68,7 @@ const SLIDE_SEND_CSS = `
   position: relative;
   display: inline-block;
   vertical-align: middle;
+  max-width: 100%;
   font-family: inherit;
 }
 
@@ -83,7 +84,7 @@ const SLIDE_SEND_CSS = `
   border-radius: var(--ss-radius);
   background: var(--ss-track);
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -368,6 +369,10 @@ function SlideSend({
     },
     []
   )
+
+  useEffect(() => {
+    if (phase === 'idle' && !grip.current) x.set(0)
+  }, [width, phase, x])
 
   const local = (clientX) => {
     const rect = trackRef.current?.getBoundingClientRect()
@@ -911,7 +916,7 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
           alpha: true,
         })
         this.renderer.setSize(initW, initH, false)
-        this.renderer.setPixelRatio(window.devicePixelRatio)
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
         this.renderer.domElement.style.width = '100%'
         this.renderer.domElement.style.height = '100%'
         this.renderer.domElement.style.display = 'block'
@@ -986,7 +991,7 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
           return
         }
 
-        this.renderer.setSize(width, height)
+        this.renderer.setSize(width, height, false)
         this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
         this.composer.setSize(width, height)
@@ -1046,6 +1051,7 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
       }
 
       init() {
+        if (this.disposed) return
         this.initPasses()
         const options = this.options
         this.road.init()
@@ -1785,8 +1791,55 @@ const heroHyperspeedOptions = {
   },
 }
 
+const heroHyperspeedMobileOptions = {
+  ...heroHyperspeedOptions,
+  totalSideLightSticks: 12,
+  lightPairsPerRoadWay: 22,
+  fov: 80,
+  fovSpeedUp: 120,
+}
+
+const MOBILE_QUERY = '(max-width: 767px)'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && !!window.matchMedia?.(MOBILE_QUERY).matches
+  )
+
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY)
+    const onChange = (e) => setIsMobile(e.matches)
+    setIsMobile(mql.matches)
+    if (mql.addEventListener) mql.addEventListener('change', onChange)
+    else mql.addListener(onChange)
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener('change', onChange)
+      else mql.removeListener(onChange)
+    }
+  }, [])
+
+  return isMobile
+}
+
+function useSlideWidth(max = 320, min = 240, gutter = 48) {
+  const [w, setW] = useState(() =>
+    typeof window === 'undefined' ? max : Math.max(min, Math.min(max, window.innerWidth - gutter))
+  )
+
+  useEffect(() => {
+    const update = () => setW(Math.max(min, Math.min(max, window.innerWidth - gutter)))
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [max, min, gutter])
+
+  return w
+}
+
 export default function Careers() {
   const openings = []
+  const isMobile = useIsMobile()
+  const slideWidth = useSlideWidth(320, 240, 48)
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -1854,22 +1907,35 @@ export default function Careers() {
       })
   }
 
+  const inputClass = 'w-full border rounded-md px-3 py-3 sm:py-2 text-base bg-white focus:outline-none focus:ring-2'
+
   return (
-    <div className="text-black">
-      <section className="relative px-4 sm:px-8 py-24 sm:py-32 text-center text-white overflow-hidden" style={{ backgroundColor: '#000' }}>
-        <div className="absolute inset-y-0 left-0 w-3/5 md:w-[55%] overflow-hidden">
-          <Hyperspeed effectOptions={heroHyperspeedOptions} />
-        </div>
-        <div className="absolute inset-y-0 right-0 w-3/5 md:w-[55%] overflow-hidden" style={{ transform: 'scaleX(-1)' }}>
-          <Hyperspeed effectOptions={heroHyperspeedOptions} />
-        </div>
+    <div className="text-black overflow-x-hidden">
+      <section
+        className="relative px-4 sm:px-8 py-16 sm:py-24 md:py-32 text-center text-white overflow-hidden"
+        style={{ backgroundColor: '#000' }}
+      >
+        {isMobile ? (
+          <div className="absolute inset-0 overflow-hidden">
+            <Hyperspeed effectOptions={heroHyperspeedMobileOptions} />
+          </div>
+        ) : (
+          <>
+            <div className="absolute inset-y-0 left-0 w-[55%] overflow-hidden">
+              <Hyperspeed effectOptions={heroHyperspeedOptions} />
+            </div>
+            <div className="absolute inset-y-0 right-0 w-[55%] overflow-hidden" style={{ transform: 'scaleX(-1)' }}>
+              <Hyperspeed effectOptions={heroHyperspeedOptions} />
+            </div>
+          </>
+        )}
         <div className="relative z-10 flex justify-center">
           <div
-            className="max-w-md px-8 py-10 rounded-2xl"
-            style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+            className="w-full max-w-md px-5 py-8 sm:px-8 sm:py-10 rounded-2xl"
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Careers at NCM Inc</h1>
-            <p className="text-gray-200">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 break-words">Careers at NCM Inc</h1>
+            <p className="text-gray-200 text-sm sm:text-base">
               Build your career with a firm that combines professional heritage with
               modern thinking. We're always interested in hearing from talented,
               driven individuals.
@@ -1878,9 +1944,9 @@ export default function Careers() {
         </div>
       </section>
 
-      <section className="px-4 sm:px-8 py-16 max-w-4xl mx-auto text-center">
-        <h2 className="text-2xl font-bold mb-8" style={{ color: 'var(--ncm-teal)' }}>Why Work With Us</h2>
-        <div className="grid md:grid-cols-3 gap-8">
+      <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto text-center">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8" style={{ color: 'var(--ncm-teal)' }}>Why Work With Us</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div>
             <h3 className="font-semibold text-lg mb-2">Professional Growth</h3>
             <p className="text-gray-600 text-sm">Structured mentorship and exposure to a broad range of clients and industries.</p>
@@ -1896,9 +1962,9 @@ export default function Careers() {
         </div>
       </section>
 
-      <section className="px-4 sm:px-8 py-16" style={{ backgroundColor: '#f0f7f6' }}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16" style={{ backgroundColor: '#f0f7f6' }}>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8 text-center" style={{ color: 'var(--ncm-black)' }}>
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center" style={{ color: 'var(--ncm-black)' }}>
             Current Openings
           </h2>
 
@@ -1907,16 +1973,16 @@ export default function Careers() {
               {openings.map((job) => (
                 <div
                   key={job.title}
-                  className="bg-white p-5 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                  className="bg-white p-4 sm:p-5 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 >
-                  <div>
-                    <h3 className="font-semibold">{job.title}</h3>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold break-words">{job.title}</h3>
                     <p className="text-sm text-gray-500">{job.location} · {job.type}</p>
                   </div>
                   <a
                     href="#apply"
-                    className="text-sm font-medium"
+                    className="text-sm font-medium py-2 sm:py-0"
                     style={{ color: 'var(--ncm-teal)' }}
                   >
                     Apply →
@@ -1925,7 +1991,7 @@ export default function Careers() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-600">
+            <p className="text-center text-gray-600 text-sm sm:text-base">
               We don't have any open positions right now, but we're always happy
               to hear from talented people. Fill in the form below and we'll keep
               your details on file for future opportunities.
@@ -1934,11 +2000,11 @@ export default function Careers() {
         </div>
       </section>
 
-      <section id="apply" className="px-4 sm:px-8 py-16 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
+      <section id="apply" className="px-4 sm:px-8 py-12 sm:py-16 max-w-2xl mx-auto">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2 text-center" style={{ color: 'var(--ncm-teal)' }}>
           Apply Now
         </h2>
-        <p className="text-center text-gray-600 mb-8 text-sm">
+        <p className="text-center text-gray-600 mb-6 sm:mb-8 text-sm">
           Fill in your details below. We'll be in touch if there's a suitable opportunity.
         </p>
 
@@ -1949,10 +2015,11 @@ export default function Careers() {
               id="name"
               name="name"
               type="text"
+              autoComplete="name"
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              className={inputClass}
               style={{ borderColor: 'var(--ncm-grey)' }}
             />
           </div>
@@ -1964,10 +2031,12 @@ export default function Careers() {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                className={inputClass}
                 style={{ borderColor: 'var(--ncm-grey)' }}
               />
             </div>
@@ -1977,9 +2046,11 @@ export default function Careers() {
                 id="phone"
                 name="phone"
                 type="tel"
+                autoComplete="tel"
+                inputMode="tel"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                className={inputClass}
                 style={{ borderColor: 'var(--ncm-grey)' }}
               />
             </div>
@@ -1995,7 +2066,7 @@ export default function Careers() {
               placeholder="e.g. Trainee Accountant, General Application"
               value={formData.position}
               onChange={handleChange}
-              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              className={inputClass}
               style={{ borderColor: 'var(--ncm-grey)' }}
             />
           </div>
@@ -2010,13 +2081,13 @@ export default function Careers() {
               placeholder="Tell us a bit about yourself and why you'd like to join NCM Inc"
               value={formData.message}
               onChange={handleChange}
-              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+              className={inputClass}
               style={{ borderColor: 'var(--ncm-grey)' }}
             />
           </div>
 
           <div
-            className="text-sm rounded-md px-4 py-3"
+            className="text-sm rounded-md px-4 py-3 break-words"
             style={{ backgroundColor: '#f0f7f6', border: '1px solid #cfe8e4', color: 'var(--ncm-teal)' }}
           >
             📎 Please email your CV directly to <strong>info@ncmca.co.za</strong> along
@@ -2035,7 +2106,7 @@ export default function Careers() {
             handleColor="var(--ncm-teal)"
             successColor="#22c55e"
             dangerColor="#e5484d"
-            width={320}
+            width={slideWidth}
             height={56}
             radius={28}
             disabled={!formData.name || !formData.email || !formData.position || !formData.message}
@@ -2053,9 +2124,9 @@ export default function Careers() {
         </div>
       </section>
 
-      <section className="px-4 sm:px-8 py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
-        <h2 className="text-2xl md:text-3xl font-bold mb-4">Have Questions First?</h2>
-        <p className="mb-8 max-w-xl mx-auto">
+      <section className="px-4 sm:px-8 py-12 sm:py-16 text-center text-white" style={{ backgroundColor: 'var(--ncm-teal)' }}>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">Have Questions First?</h2>
+        <p className="mb-8 max-w-xl mx-auto text-sm sm:text-base">
           Reach out to us directly if you'd like to know more before applying.
         </p>
         <Link
