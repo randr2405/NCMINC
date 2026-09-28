@@ -7,6 +7,8 @@ export default function Navbar() {
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const closeTimer = useRef(null)
+  const drawerCloseRef = useRef(null)
+  const burgerRef = useRef(null)
   const location = useLocation()
 
   const services = [
@@ -60,6 +62,13 @@ export default function Navbar() {
     }
   }, [mobileOpen])
 
+  useEffect(() => {
+    if (mobileOpen) {
+      const t = setTimeout(() => drawerCloseRef.current?.focus(), 250)
+      return () => clearTimeout(t)
+    }
+  }, [mobileOpen])
+
   const openServices = () => {
     clearTimeout(closeTimer.current)
     setServicesOpen(true)
@@ -67,14 +76,19 @@ export default function Navbar() {
   const closeServicesDelayed = () => {
     closeTimer.current = setTimeout(() => setServicesOpen(false), 120)
   }
+  const closeMobile = () => {
+    setMobileOpen(false)
+    setMobileServicesOpen(false)
+    burgerRef.current?.focus()
+  }
 
   return (
     <nav
       className={
         'sticky top-0 z-50 bg-white transition-shadow duration-300 ' +
-        (scrolled || mobileOpen ? 'shadow-md' : 'shadow-none border-b')
+        (scrolled ? 'shadow-md' : 'shadow-none border-b')
       }
-      style={{ borderColor: scrolled || mobileOpen ? 'transparent' : 'var(--ncm-grey)' }}
+      style={{ borderColor: scrolled ? 'transparent' : 'var(--ncm-grey)' }}
     >
       <div
         className={
@@ -168,37 +182,64 @@ export default function Navbar() {
         </div>
 
         <button
-          className="md:hidden relative z-50 w-11 h-11 -mr-2 flex flex-col justify-center items-center gap-1.5"
+          ref={burgerRef}
+          className="md:hidden w-11 h-11 -mr-2 flex flex-col justify-center items-center gap-1.5"
           style={{ color: 'var(--ncm-black)' }}
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open menu"
           aria-expanded={mobileOpen}
+          aria-controls="mobile-drawer"
         >
-          <span
-            className="block h-[2px] w-6 bg-current transition-all duration-300 origin-center"
-            style={{ transform: mobileOpen ? 'translateY(8px) rotate(45deg)' : 'none' }}
-          />
-          <span
-            className="block h-[2px] w-6 bg-current transition-all duration-300"
-            style={{ opacity: mobileOpen ? 0 : 1 }}
-          />
-          <span
-            className="block h-[2px] w-6 bg-current transition-all duration-300 origin-center"
-            style={{ transform: mobileOpen ? 'translateY(-8px) rotate(-45deg)' : 'none' }}
-          />
+          <span className="block h-[2px] w-6 bg-current" />
+          <span className="block h-[2px] w-6 bg-current" />
+          <span className="block h-[2px] w-6 bg-current" />
         </button>
       </div>
 
       <div
         className={
-          'md:hidden overflow-y-auto overscroll-contain transition-all duration-300 ease-in-out border-t ' +
-          (mobileOpen ? 'max-h-[calc(100dvh-64px)] opacity-100' : 'max-h-0 opacity-0 pointer-events-none')
+          'md:hidden fixed inset-0 z-[60] bg-black/50 transition-opacity duration-300 ease-out ' +
+          (mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none')
         }
-        style={{ borderColor: 'var(--ncm-grey)' }}
+        onClick={closeMobile}
+        aria-hidden="true"
+      />
+
+      <aside
+        id="mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        aria-hidden={!mobileOpen}
+        className={
+          'md:hidden fixed top-0 right-0 z-[70] h-[100dvh] w-[85vw] max-w-sm bg-white shadow-2xl flex flex-col transition-all duration-300 ease-out ' +
+          (mobileOpen ? 'translate-x-0 visible' : 'translate-x-full invisible')
+        }
       >
-        <div className="px-4 sm:px-8 py-3 flex flex-col">
+        <div
+          className="flex items-center justify-between px-5 h-16 shrink-0 border-b"
+          style={{ borderColor: 'var(--ncm-grey)' }}
+        >
+          <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--ncm-black)' }}>
+            NCM <span style={{ color: 'var(--ncm-teal)' }}>INC</span>
+          </span>
+          <button
+            ref={drawerCloseRef}
+            className="w-11 h-11 -mr-2 flex items-center justify-center"
+            style={{ color: 'var(--ncm-black)' }}
+            onClick={closeMobile}
+            aria-label="Close menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-3 flex flex-col">
           <Link
             to="/about-us"
+            onClick={closeMobile}
             className="flex items-center min-h-[48px] text-base font-medium"
             style={{ color: 'var(--ncm-black)' }}
           >
@@ -234,8 +275,10 @@ export default function Navbar() {
                 <Link
                   key={s.path}
                   to={s.path}
+                  onClick={closeMobile}
                   className="flex items-center min-h-[44px] text-sm pl-3"
                   style={{ color: 'var(--ncm-black)' }}
+                  tabIndex={mobileServicesOpen ? 0 : -1}
                 >
                   {s.name}
                 </Link>
@@ -245,21 +288,25 @@ export default function Navbar() {
 
           <Link
             to="/careers"
+            onClick={closeMobile}
             className="flex items-center min-h-[48px] text-base font-medium"
             style={{ color: 'var(--ncm-black)' }}
           >
             Careers
           </Link>
+        </div>
 
+        <div className="shrink-0 px-5 py-4 border-t" style={{ borderColor: 'var(--ncm-grey)' }}>
           <Link
             to="/contact"
-            className="mt-2 mb-2 flex items-center justify-center min-h-[48px] rounded-md font-semibold text-white"
+            onClick={closeMobile}
+            className="flex items-center justify-center min-h-[48px] rounded-md font-semibold text-white"
             style={{ backgroundColor: 'var(--ncm-teal)' }}
           >
             Contact Us
           </Link>
         </div>
-      </div>
+      </aside>
     </nav>
   )
 }
