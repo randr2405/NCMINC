@@ -17,6 +17,43 @@ const EMAILJS_SERVICE_ID = 'service_hrlhqm6'
 const EMAILJS_TEMPLATE_ID = 'template_0c0a3vf'
 const EMAILJS_PUBLIC_KEY = '1UTJkjoUojZi_XgnG'
 
+const MOBILE_QUERY = '(max-width: 767px)'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && !!window.matchMedia?.(MOBILE_QUERY).matches
+  )
+
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY)
+    const onChange = (e) => setIsMobile(e.matches)
+    setIsMobile(mql.matches)
+    if (mql.addEventListener) mql.addEventListener('change', onChange)
+    else mql.addListener(onChange)
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener('change', onChange)
+      else mql.removeListener(onChange)
+    }
+  }, [])
+
+  return isMobile
+}
+
+function useSlideWidth(max = 280, min = 220, gutter = 48) {
+  const [w, setW] = useState(() =>
+    typeof window === 'undefined' ? max : Math.max(min, Math.min(max, window.innerWidth - gutter))
+  )
+
+  useEffect(() => {
+    const update = () => setW(Math.max(min, Math.min(max, window.innerWidth - gutter)))
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [max, min, gutter])
+
+  return w
+}
+
 const PARTICLES_DEFAULT_COLORS = ['#0f766e', '#14b8a6', '#5eead4']
 
 const particlesHexToRgb = (hex) => {
@@ -34,7 +71,7 @@ const particlesHexToRgb = (hex) => {
   return [r, g, b]
 }
 
-const particlesVertex = /* glsl */ `
+const particlesVertex = `
   attribute vec3 position;
   attribute vec4 random;
   attribute vec3 color;
@@ -75,7 +112,7 @@ const particlesVertex = /* glsl */ `
   }
 `
 
-const particlesFragment = /* glsl */ `
+const particlesFragment = `
   precision highp float;
 
   uniform float uTime;
@@ -265,8 +302,8 @@ function Particles({
       if (container.contains(gl.canvas)) {
         container.removeChild(gl.canvas)
       }
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     particleCount,
     particleSpread,
@@ -432,6 +469,7 @@ const SLIDE_SEND_CSS = `
   position: relative;
   display: inline-block;
   vertical-align: middle;
+  max-width: 100%;
   font-family: inherit;
 }
 
@@ -447,7 +485,7 @@ const SLIDE_SEND_CSS = `
   border-radius: var(--ss-radius);
   background: var(--ss-track);
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -733,6 +771,10 @@ function SlideSend({
     []
   )
 
+  useEffect(() => {
+    if (phase === 'idle' && !grip.current) x.set(0)
+  }, [width, phase, x])
+
   const local = (clientX) => {
     const rect = trackRef.current?.getBoundingClientRect()
     if (!rect) return 0
@@ -976,56 +1018,76 @@ function SlideSend({
 function ContactHero() {
   const ref = useRef(null)
   const reduce = useReducedMotion()
+  const isMobile = useIsMobile()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 90])
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, isMobile ? 40 : 90])
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
   const leftX = useTransform(scrollYProgress, [0, 1], [0, -60])
   const rightX = useTransform(scrollYProgress, [0, 1], [0, 60])
+  const pixelRatio = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1
 
   return (
     <section
       ref={ref}
-      className="relative px-4 sm:px-8 py-16 text-center text-white overflow-hidden"
+      className="relative px-4 sm:px-8 py-14 sm:py-16 text-center text-white overflow-hidden"
       style={{ backgroundColor: 'var(--ncm-black)' }}
     >
-      <motion.div
-        className="absolute inset-y-0 left-0 w-1/3 md:w-2/5"
-        style={{ x: reduce ? 0 : leftX }}
-      >
-        <Particles
-          particleColors={['#0f766e', '#14b8a6', '#5eead4']}
-          particleCount={140}
-          particleSpread={10}
-          speed={0.1}
-          particleBaseSize={90}
-          moveParticlesOnHover
-          alphaParticles={false}
-          disableRotation={false}
-          pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
-        />
-      </motion.div>
-      <motion.div
-        className="absolute inset-y-0 right-0 w-1/3 md:w-2/5"
-        style={{ x: reduce ? 0 : rightX }}
-      >
-        <Particles
-          particleColors={['#0f766e', '#14b8a6', '#5eead4']}
-          particleCount={140}
-          particleSpread={10}
-          speed={0.1}
-          particleBaseSize={90}
-          moveParticlesOnHover
-          alphaParticles={false}
-          disableRotation={false}
-          pixelRatio={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1}
-        />
-      </motion.div>
+      {isMobile ? (
+        <div className="absolute inset-0">
+          <Particles
+            particleColors={['#0f766e', '#14b8a6', '#5eead4']}
+            particleCount={90}
+            particleSpread={10}
+            speed={0.1}
+            particleBaseSize={70}
+            moveParticlesOnHover={false}
+            alphaParticles={false}
+            disableRotation={false}
+            pixelRatio={pixelRatio}
+          />
+        </div>
+      ) : (
+        <>
+          <motion.div
+            className="absolute inset-y-0 left-0 w-2/5"
+            style={{ x: reduce ? 0 : leftX }}
+          >
+            <Particles
+              particleColors={['#0f766e', '#14b8a6', '#5eead4']}
+              particleCount={140}
+              particleSpread={10}
+              speed={0.1}
+              particleBaseSize={90}
+              moveParticlesOnHover
+              alphaParticles={false}
+              disableRotation={false}
+              pixelRatio={pixelRatio}
+            />
+          </motion.div>
+          <motion.div
+            className="absolute inset-y-0 right-0 w-2/5"
+            style={{ x: reduce ? 0 : rightX }}
+          >
+            <Particles
+              particleColors={['#0f766e', '#14b8a6', '#5eead4']}
+              particleCount={140}
+              particleSpread={10}
+              speed={0.1}
+              particleBaseSize={90}
+              moveParticlesOnHover
+              alphaParticles={false}
+              disableRotation={false}
+              pixelRatio={pixelRatio}
+            />
+          </motion.div>
+        </>
+      )}
       <motion.div
         className="relative z-10"
         style={{ y: reduce ? 0 : heroY, opacity: reduce ? 1 : heroOpacity }}
       >
         <motion.h1
-          className="text-4xl md:text-5xl font-bold mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
           initial={reduce ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: REVEAL_EASE }}
@@ -1033,7 +1095,7 @@ function ContactHero() {
           Contact Us
         </motion.h1>
         <motion.p
-          className="text-gray-300 max-w-xl mx-auto"
+          className="text-gray-300 max-w-xl mx-auto text-sm sm:text-base"
           initial={reduce ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.12, ease: REVEAL_EASE }}
@@ -1055,6 +1117,8 @@ const CONTACT_ITEMS = [
 ]
 
 export default function Contact() {
+  const isMobile = useIsMobile()
+  const slideWidth = useSlideWidth(280, 220, 48)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -1102,23 +1166,35 @@ export default function Contact() {
       })
   }
 
+  const focusAnim = isMobile
+    ? { borderColor: 'var(--ncm-teal)' }
+    : { scale: 1.01, borderColor: 'var(--ncm-teal)' }
+  const inputClass = 'w-full border rounded-md px-3 py-3 sm:py-2 text-base bg-white focus:outline-none focus:ring-2'
+  const slideIn = isMobile ? 0 : 24
+
   return (
-    <div className="text-black">
+    <div className="text-black overflow-x-hidden">
       <ContactHero />
 
-      <section className="px-4 sm:px-8 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
-        <div>
-          <Reveal as="h2" className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }} x={-24} y={0}>
+      <section className="px-4 sm:px-8 py-12 sm:py-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+        <div className="min-w-0">
+          <Reveal
+            as="h2"
+            className="text-xl sm:text-2xl font-bold mb-6"
+            style={{ color: 'var(--ncm-teal)' }}
+            x={-slideIn}
+            y={isMobile ? 16 : 0}
+          >
             Get in Touch
           </Reveal>
 
-          <RevealGroup className="space-y-5 text-gray-700" stagger={0.1}>
+          <RevealGroup className="space-y-5 text-gray-700" stagger={0.1} amount={0.1}>
             {CONTACT_ITEMS.map((item) => (
               <RevealItem key={item.label} className="flex items-start gap-3" y={16}>
                 <span style={{ color: 'var(--ncm-teal)' }}>{item.icon}</span>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold">{item.label}</p>
-                  <p className="text-sm">{item.value}</p>
+                  <p className="text-sm break-words">{item.value}</p>
                 </div>
               </RevealItem>
             ))}
@@ -1126,32 +1202,39 @@ export default function Contact() {
 
           <Reveal
             as="p"
-            className="mt-10 italic text-gray-500 text-sm"
+            className="mt-8 sm:mt-10 italic text-gray-500 text-sm"
             delay={0.1}
           >
             Delivering Excellence Through Integrity, Insight and Innovation.
           </Reveal>
         </div>
 
-        <div>
-          <Reveal as="h2" className="text-2xl font-bold mb-6" style={{ color: 'var(--ncm-teal)' }} x={24} y={0}>
+        <div className="min-w-0">
+          <Reveal
+            as="h2"
+            className="text-xl sm:text-2xl font-bold mb-6"
+            style={{ color: 'var(--ncm-teal)' }}
+            x={slideIn}
+            y={isMobile ? 16 : 0}
+          >
             Send a Message
           </Reveal>
 
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <RevealGroup stagger={0.08} className="space-y-4">
+            <RevealGroup stagger={0.08} className="space-y-4" amount={0.05}>
               <RevealItem y={18}>
                 <label htmlFor="name" className="block text-sm font-medium mb-1 text-gray-700">Full Name</label>
                 <motion.input
                   id="name"
                   name="name"
                   type="text"
+                  autoComplete="name"
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  whileFocus={focusAnim}
                   transition={{ duration: 0.2, ease: REVEAL_EASE }}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 />
               </RevealItem>
@@ -1163,12 +1246,14 @@ export default function Contact() {
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
+                    inputMode="email"
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                    whileFocus={focusAnim}
                     transition={{ duration: 0.2, ease: REVEAL_EASE }}
-                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                    className={inputClass}
                     style={{ borderColor: 'var(--ncm-grey)' }}
                   />
                 </div>
@@ -1178,11 +1263,13 @@ export default function Contact() {
                     id="phone"
                     name="phone"
                     type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                    whileFocus={focusAnim}
                     transition={{ duration: 0.2, ease: REVEAL_EASE }}
-                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                    className={inputClass}
                     style={{ borderColor: 'var(--ncm-grey)' }}
                   />
                 </div>
@@ -1197,9 +1284,9 @@ export default function Contact() {
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  whileFocus={focusAnim}
                   transition={{ duration: 0.2, ease: REVEAL_EASE }}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 />
               </RevealItem>
@@ -1213,9 +1300,9 @@ export default function Contact() {
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  whileFocus={{ scale: 1.01, borderColor: 'var(--ncm-teal)' }}
+                  whileFocus={focusAnim}
                   transition={{ duration: 0.2, ease: REVEAL_EASE }}
-                  className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={{ borderColor: 'var(--ncm-grey)' }}
                 />
               </RevealItem>
@@ -1232,7 +1319,7 @@ export default function Contact() {
               handleColor="var(--ncm-teal)"
               successColor="#22c55e"
               dangerColor="#e5484d"
-              width={280}
+              width={slideWidth}
               height={56}
               radius={28}
               disabled={!formData.name || !formData.email || !formData.subject || !formData.message}
