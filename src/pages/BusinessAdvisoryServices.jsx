@@ -110,6 +110,7 @@ export default function BusinessAdvisoryServices() {
             'Debt restructuring',
             'Working capital financing',
             'Equity funding assessments',
+            'Applications for government grants',
           ],
         },
         {

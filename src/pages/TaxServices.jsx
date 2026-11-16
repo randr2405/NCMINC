@@ -23,6 +23,7 @@ export default function TaxServices() {
             'Deferred tax analysis and reconciliation support',
             'Corporate tax planning aligned to business strategy',
             'Group company tax optimisation and intercompany structuring',
+            'Tax structuring (Section 42)',
             'Preparation for SARS audits, verifications and reviews',
             'Objections, appeals and dispute resolution',
           ],
@@ -58,12 +59,13 @@ export default function TaxServices() {
           description: 'One of the most sensitive and high-risk tax areas due to frequent audits and strict enforcement.',
           items: [
             'VAT registration, deregistration and category changes',
-            'Monthly and bi-monthly VAT 201 return submissions',
+            'VAT 201 return submissions',
             'Input and output VAT reconciliation',
             'VAT ledger balancing and compliance reviews',
             'Assistance with VAT audits, verifications and queries',
             'VAT refund claims and dispute resolution',
             'Industry-specific VAT advisory (property, retail, services, imports/exports)',
+            'Assistance with VAT modernisation',
           ],
         },
         {
