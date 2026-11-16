@@ -137,6 +137,9 @@ export default function TaxServices() {
             'Expatriate tax structuring and optimisation',
             'Offshore investment tax compliance',
             'Exchange control advisory considerations',
+            'Global minimum tax compliance',
+            'Bond store compliance',
+            'RLA applications (import and export licences)',
           ],
         },
         {
