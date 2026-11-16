@@ -87,6 +87,19 @@ export default function BusinessAdvisoryServices() {
           ],
         },
         {
+          title: 'Due Diligence Reviews',
+          description: 'For buying, selling, merging or investing in a business — identifying risks and opportunities before critical decisions. Our reviews cover:',
+          items: [
+            'Financial due diligence',
+            'Tax due diligence',
+            'Operational assessments',
+            'Compliance reviews',
+            'Commercial risk analysis',
+            'Working capital evaluations',
+            'Quality of earnings assessments',
+          ],
+        },
+        {
           title: 'Corporate Finance Advisory',
           description: 'Accessing finance is often critical for business growth.',
           items: [
@@ -134,6 +147,19 @@ export default function BusinessAdvisoryServices() {
             'Business process optimisation',
             'Performance monitoring systems',
             'Strategic performance reviews',
+          ],
+        },
+        {
+          title: 'IT Audit & Technology Assurance',
+          description: 'Assessing the effectiveness and security of your information systems.',
+          items: [
+            'IT governance reviews',
+            'Cybersecurity assessments',
+            'Access control reviews',
+            'Data protection compliance',
+            'System implementation reviews',
+            'Disaster recovery evaluations',
+            'IT risk assessments',
           ],
         },
         {

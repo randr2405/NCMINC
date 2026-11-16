@@ -473,7 +473,7 @@ export default function Home() {
     {
       title: 'Audit & Assurance',
       path: '/audit-assurance-services',
-      items: ['Statutory Audits', 'External Audits', 'Internal Audits', 'Independent Reviews', 'Due Diligence Reviews'],
+      items: ['Statutory, External & Compliance Audits', 'Internal Audits', 'Forensic Audits', 'Independent Reviews', 'Agreed-Upon Procedures'],
     },
     {
       title: 'Accounting & Financial Reporting',
@@ -488,7 +488,7 @@ export default function Home() {
     {
       title: 'Business Advisory',
       path: '/business-advisory-services',
-      items: ['Business Consulting', 'Strategic Planning', 'Financial Modelling', 'Business Valuations', 'Mergers and Acquisitions Support'],
+      items: ['Business Consulting', 'Financial Modelling', 'Business Valuations', 'Due Diligence Reviews', 'Mergers and Acquisitions Support', 'IT Audit & Technology Assurance'],
     },
     {
       title: 'Company Secretarial Services',

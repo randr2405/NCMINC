@@ -1134,32 +1134,6 @@ export default function AboutUs() {
         </Reveal>
       </section>
 
-      <section className="px-5 sm:px-8 py-12 sm:py-16 max-w-4xl mx-auto text-center">
-        <Reveal as="h2" className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
-          Building the Future
-        </Reveal>
-        <Reveal delay={60} as="h3" className="text-lg sm:text-xl font-semibold mb-5 sm:mb-6">
-          Our Legacy Is Our Foundation. Our Future Is Our Opportunity.
-        </Reveal>
-        <Reveal delay={100} className="mb-4 text-sm sm:text-base text-gray-700">
-          NCM Inc is proud of its history. More than four decades of professional service
-          have created a foundation of experience, relationships and knowledge that we
-          intend to carry forward.
-        </Reveal>
-        <Reveal delay={160} className="mb-4 text-sm sm:text-base text-gray-700">
-          But we also recognise that the professional services environment is changing
-          rapidly. Technology, regulation, globalisation and changing client expectations
-          are reshaping the way businesses operate. NCM Inc is responding to that change.
-        </Reveal>
-        <Reveal delay={220} className="mb-4 text-sm sm:text-base text-gray-700">
-          We are investing in people, technology, systems and service capabilities to
-          create a professional practice that is modern, responsive and future-focused.
-        </Reveal>
-        <Reveal delay={280} className="font-semibold text-sm sm:text-base text-gray-800">
-          Our ambition is not simply to continue the NCM Inc story. It is to build its next chapter.
-        </Reveal>
-      </section>
-
       <section
         className="px-5 sm:px-8 py-12 sm:py-16 text-center text-white"
         style={{ backgroundColor: 'var(--ncm-teal)' }}

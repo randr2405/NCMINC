@@ -16,25 +16,21 @@ export default function AuditAssuranceServices() {
       ]}
       sections={[
         {
-          title: 'Statutory Audits',
-          description: 'Independent statutory audits in accordance with the International Standards on Auditing (ISA) and applicable South African legislation, providing:',
+          title: 'Statutory, External & Compliance Audits',
+          description: 'Independent audits in accordance with the International Standards on Auditing (ISA) and applicable South African legislation, including an objective assessment of your financial reporting processes and controls, and of your compliance with applicable legislation, regulations, policies and industry standards, providing:',
           items: [
-            'Independent verification of financial statements',
-            'Enhanced credibility with investors, lenders and stakeholders',
-            'Compliance with Companies Act requirements',
+            'Independent verification of financial statements and assurance over their accuracy and completeness',
+            'Enhanced credibility and confidence among investors, lenders and stakeholders',
+            'Companies Act compliance',
             'Improved financial transparency and accountability',
             'Identification of key business and financial risks',
-          ],
-        },
-        {
-          title: 'External Audits',
-          description: 'An objective assessment of your financial reporting processes and controls.',
-          items: [
-            'Increased stakeholder confidence',
             'Improved corporate governance',
             'Enhanced operational efficiency',
             'Stronger financial reporting practices',
-            'Assurance over financial accuracy and completeness',
+            'Tax compliance',
+            'Trust administration compliance',
+            'Industry-specific regulations',
+            'Internal policy adherence',
           ],
         },
         {
@@ -50,6 +46,19 @@ export default function AuditAssuranceServices() {
           ],
         },
         {
+          title: 'Forensic Audits',
+          description: 'Specialised investigations into suspected fraud, irregularities and financial misconduct, delivering clear, evidence-based findings you can act on. Our forensic services include:',
+          items: [
+            'Fraud and financial misconduct investigations',
+            'Detection of misappropriation of assets and funds',
+            'Forensic analysis of accounting records and transactions',
+            'Evidence gathering and preservation',
+            'Fraud risk assessments and control weakness identification',
+            'Expert reports to support disciplinary, civil and criminal proceedings',
+            'Recommendations to strengthen fraud prevention measures',
+          ],
+        },
+        {
           title: 'Independent Reviews',
           description: 'For entities not requiring a full audit — limited assurance engagements offering:',
           items: [
@@ -58,19 +67,6 @@ export default function AuditAssuranceServices() {
             'Improved financial credibility',
             'Enhanced stakeholder confidence',
             'Timely reporting',
-          ],
-        },
-        {
-          title: 'Due Diligence Reviews',
-          description: 'For buying, selling, merging or investing in a business — identifying risks and opportunities before critical decisions. Our reviews cover:',
-          items: [
-            'Financial due diligence',
-            'Tax due diligence',
-            'Operational assessments',
-            'Compliance reviews',
-            'Commercial risk analysis',
-            'Working capital evaluations',
-            'Quality of earnings assessments',
           ],
         },
         {
@@ -94,31 +90,6 @@ export default function AuditAssuranceServices() {
             'Compliance gap identification',
             'Audit file preparation',
             'Management reporting reviews',
-          ],
-        },
-        {
-          title: 'Compliance Audits',
-          description: 'Assessing compliance with applicable legislation, regulations, policies and industry standards.',
-          items: [
-            'Companies Act compliance',
-            'Tax compliance',
-            'Trust administration compliance',
-            'Corporate governance requirements',
-            'Industry-specific regulations',
-            'Internal policy adherence',
-          ],
-        },
-        {
-          title: 'IT Audit & Technology Assurance',
-          description: 'Assessing the effectiveness and security of your information systems.',
-          items: [
-            'IT governance reviews',
-            'Cybersecurity assessments',
-            'Access control reviews',
-            'Data protection compliance',
-            'System implementation reviews',
-            'Disaster recovery evaluations',
-            'IT risk assessments',
           ],
         },
         {
@@ -149,7 +120,7 @@ export default function AuditAssuranceServices() {
       valuePoints={[
         'Independent & Objective — unbiased assurance you can trust',
         'Experienced Professionals — qualified Chartered Accountants & Registered Auditors',
-        'Industry Expertise — experience across manufacturing, retail, professional services, NPOs, trusts and property',
+        'Industry Expertise — experience across all industries and sectors, with no limitation to any specific field',
         'Regulatory Knowledge — deep understanding of South African regulatory, tax and financial reporting requirements',
         'Risk-Focused Approach — identifying risks before they become problems',
         'Value-Adding Insights — practical recommendations that support growth and improved performance',

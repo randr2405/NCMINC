@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import emailjs from '@emailjs/browser'
 import { BloomEffect, EffectComposer, EffectPass, RenderPass, SMAAEffect, SMAAPreset } from 'postprocessing'
 import * as THREE from 'three'
 import {
@@ -614,11 +613,8 @@ function SlideSend({
   )
 }
 
-const EMAILJS_SERVICE_ID = 'service_84h3ijq'
-const EMAILJS_TEMPLATE_ID = 'template_uiqsv7j'
-const EMAILJS_PUBLIC_KEY = '4fhuYl5hFBniQ1LVE'
-
 const DEFAULT_EFFECT_OPTIONS = {
+  timeScale: 1,
   onSpeedUp: () => {},
   onSlowDown: () => {},
   distortion: 'turbulentDistortion',
@@ -1109,7 +1105,7 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
         this.speedUp += lerp(this.speedUp, this.speedUpTarget, lerpPercentage, 0.00001)
         this.timeOffset += this.speedUp * delta
 
-        const time = this.timer.getElapsed() + this.timeOffset
+        const time = (this.timer.getElapsed() + this.timeOffset) * (this.options.timeScale ?? 1)
 
         this.rightCarLights.update(time)
         this.leftCarLights.update(time)
@@ -1756,6 +1752,7 @@ function Hyperspeed({ effectOptions = DEFAULT_EFFECT_OPTIONS, lightMode = false 
 }
 
 const heroHyperspeedOptions = {
+  timeScale: 0.25,
   distortion: 'turbulentDistortion',
   length: 400,
   roadWidth: 10,
@@ -1836,8 +1833,17 @@ function useSlideWidth(max = 320, min = 240, gutter = 48) {
   return w
 }
 
+const MAX_CV_MB = 3
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).split(',')[1])
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+
 export default function Careers() {
-  const openings = []
   const isMobile = useIsMobile()
   const slideWidth = useSlideWidth(320, 240, 48)
 
@@ -1868,6 +1874,9 @@ export default function Careers() {
     message: '',
   })
   const [status, setStatus] = useState(null)
+  const [cv, setCv] = useState(null)
+  const [cvError, setCvError] = useState('')
+  const cvInputRef = useRef(null)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -1877,34 +1886,58 @@ export default function Careers() {
     e.preventDefault()
   }
 
-  const submitApplication = () => {
+  const handleCvChange = (e) => {
+    const file = e.target.files?.[0]
+    setCvError('')
+    if (!file) {
+      setCv(null)
+      return
+    }
+    if (file.type !== 'application/pdf') {
+      setCvError('Please upload a PDF file.')
+      setCv(null)
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_CV_MB * 1024 * 1024) {
+      setCvError(`File is too large. Maximum size is ${MAX_CV_MB}MB.`)
+      setCv(null)
+      e.target.value = ''
+      return
+    }
+    setCv(file)
+  }
+
+  const submitApplication = async () => {
     setStatus('sending')
 
-    const templateParams = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      position: formData.position,
-      message: formData.message,
-      time: new Date().toLocaleString('en-ZA', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }),
-    }
+    try {
+      const cvBase64 = await fileToBase64(cv)
 
-    return emailjs
-      .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, {
-        publicKey: EMAILJS_PUBLIC_KEY,
+      const res = await fetch('/api/careers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          position: formData.position,
+          message: formData.message,
+          cvName: cv.name,
+          cvBase64,
+        }),
       })
-      .then(() => {
-        setStatus('success')
-        setFormData({ name: '', email: '', phone: '', position: '', message: '' })
-      })
-      .catch((err) => {
-        console.error('EmailJS error:', err)
-        setStatus('error')
-        throw err
-      })
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+
+      setStatus('success')
+      setFormData({ name: '', email: '', phone: '', position: '', message: '' })
+      setCv(null)
+      if (cvInputRef.current) cvInputRef.current.value = ''
+    } catch (err) {
+      console.error('Application error:', err)
+      setStatus('error')
+      throw err
+    }
   }
 
   const inputClass = 'w-full border rounded-md px-3 py-3 sm:py-2 text-base bg-white focus:outline-none focus:ring-2'
@@ -1963,40 +1996,30 @@ export default function Careers() {
       </section>
 
       <section className="px-4 sm:px-8 py-12 sm:py-16" style={{ backgroundColor: '#f0f7f6' }}>
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center" style={{ color: 'var(--ncm-black)' }}>
-            Current Openings
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2" style={{ color: 'var(--ncm-teal)' }}>
+            Building the Future
           </h2>
-
-          {openings.length > 0 ? (
-            <div className="space-y-4">
-              {openings.map((job) => (
-                <div
-                  key={job.title}
-                  className="bg-white p-4 sm:p-5 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
-                  style={{ borderColor: 'var(--ncm-grey)' }}
-                >
-                  <div className="min-w-0">
-                    <h3 className="font-semibold break-words">{job.title}</h3>
-                    <p className="text-sm text-gray-500">{job.location} · {job.type}</p>
-                  </div>
-                  <a
-                    href="#apply"
-                    className="text-sm font-medium py-2 sm:py-0"
-                    style={{ color: 'var(--ncm-teal)' }}
-                  >
-                    Apply →
-                  </a>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-600 text-sm sm:text-base">
-              We don't have any open positions right now, but we're always happy
-              to hear from talented people. Fill in the form below and we'll keep
-              your details on file for future opportunities.
-            </p>
-          )}
+          <h3 className="text-lg sm:text-xl font-semibold mb-5 sm:mb-6" style={{ color: 'var(--ncm-black)' }}>
+            Our Legacy Is Our Foundation. Our Future Is Our Opportunity.
+          </h3>
+          <p className="mb-4 text-sm sm:text-base text-gray-700">
+            NCM Inc is proud of its history. More than four decades of professional service
+            have created a foundation of experience, relationships and knowledge that we
+            intend to carry forward.
+          </p>
+          <p className="mb-4 text-sm sm:text-base text-gray-700">
+            But we also recognise that the professional services environment is changing
+            rapidly. Technology, regulation, globalisation and changing client expectations
+            are reshaping the way businesses operate. NCM Inc is responding to that change.
+          </p>
+          <p className="mb-4 text-sm sm:text-base text-gray-700">
+            We are investing in people, technology, systems and service capabilities to
+            create a professional practice that is modern, responsive and future-focused.
+          </p>
+          <p className="font-semibold text-sm sm:text-base text-gray-800">
+            Our ambition is not simply to continue the NCM Inc story. It is to build its next chapter.
+          </p>
         </div>
       </section>
 
@@ -2086,14 +2109,23 @@ export default function Careers() {
             />
           </div>
 
-          <div
-            className="text-sm rounded-md px-4 py-3 break-words"
-            style={{ backgroundColor: '#f0f7f6', border: '1px solid #cfe8e4', color: 'var(--ncm-teal)' }}
-          >
-            📎 Please email your CV directly to <strong>info@ncmca.co.za</strong> along
-            with this application, referencing the position you're applying for.
+          <div>
+            <label htmlFor="cv" className="block text-sm font-medium mb-1 text-gray-700">
+              CV (PDF, max {MAX_CV_MB}MB)
+            </label>
+            <input
+              id="cv"
+              name="cv"
+              type="file"
+              accept="application/pdf,.pdf"
+              required
+              ref={cvInputRef}
+              onChange={handleCvChange}
+              className="block w-full text-sm text-gray-700 border rounded-md bg-white file:mr-4 file:py-3 sm:file:py-2 file:px-4 file:border-0 file:font-semibold file:cursor-pointer"
+              style={{ borderColor: 'var(--ncm-grey)' }}
+            />
+            {cvError && <p className="text-red-600 text-sm mt-1">{cvError}</p>}
           </div>
-
         </form>
 
         <div className="flex flex-col items-center gap-3 mt-8">
@@ -2109,11 +2141,11 @@ export default function Careers() {
             width={slideWidth}
             height={56}
             radius={28}
-            disabled={!formData.name || !formData.email || !formData.position || !formData.message}
+            disabled={!formData.name || !formData.email || !formData.position || !formData.message || !cv}
           />
           {status === 'success' && (
             <p className="text-green-600 text-sm text-center">
-              Application sent successfully! Don't forget to email your CV separately.
+              Application sent successfully! We'll be in touch if there's a suitable opportunity.
             </p>
           )}
           {status === 'error' && (

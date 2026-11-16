@@ -109,6 +109,14 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <Link to="/" className="group/link relative py-1" style={{ color: 'var(--ncm-black)' }}>
+            Home
+            <span
+              className="absolute left-0 -bottom-1 h-[2px] w-0 transition-all duration-300 group-hover/link:w-full"
+              style={{ backgroundColor: 'var(--ncm-teal)' }}
+            />
+          </Link>
+
           <Link to="/about-us" className="group/link relative py-1" style={{ color: 'var(--ncm-black)' }}>
             About Us
             <span
@@ -237,6 +245,15 @@ export default function Navbar() {
         </div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-3 flex flex-col">
+          <Link
+            to="/"
+            onClick={closeMobile}
+            className="flex items-center min-h-[48px] text-base font-medium"
+            style={{ color: 'var(--ncm-black)' }}
+          >
+            Home
+          </Link>
+
           <Link
             to="/about-us"
             onClick={closeMobile}
