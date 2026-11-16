@@ -16,7 +16,7 @@ export default function AccountingFinancialReporting() {
       ]}
       sections={[
         {
-          title: '1. Bookkeeping & Financial Record Management',
+          title: 'Bookkeeping & Financial Record Management',
           items: [
             'Daily, weekly, monthly and annual bookkeeping',
             'Recording and processing of financial transactions',
@@ -29,23 +29,16 @@ export default function AccountingFinancialReporting() {
             'Fixed asset register maintenance',
             'Financial record clean-up and reconstruction',
             'Cloud accounting support and implementation',
+            'Preparation of Annual Financial Statements',
+            'Fixed asset verification and depreciation calculations',
+            'Accrual and provision calculations',
+            'Inventory valuations',
+            'Debtor and creditor confirmations',
+            'Tax adjustment calculations',
           ],
         },
         {
-          title: '2. Preparation of Annual Financial Statements',
-          items: [
-            'Statement of Financial Position (Balance Sheet)',
-            'Statement of Profit or Loss and Other Comprehensive Income',
-            'Statement of Changes in Equity',
-            'Statement of Cash Flows',
-            'Detailed Notes to the Financial Statements',
-            'Accounting Policies and Disclosures',
-            "Directors' Reports where applicable",
-            'Supporting schedules and working papers',
-          ],
-        },
-        {
-          title: '3. Management Accounts & Periodic Reporting',
+          title: 'Management Accounts & Periodic Reporting',
           items: [
             'Monthly, quarterly and interim management accounts',
             'Executive financial summaries',
@@ -57,7 +50,7 @@ export default function AccountingFinancialReporting() {
           ],
         },
         {
-          title: '4. Financial Reporting & Regulatory Compliance',
+          title: 'Financial Reporting & Regulatory Compliance',
           items: [
             'Reporting in accordance with applicable accounting standards',
             'Companies Act compliance support',
@@ -68,7 +61,7 @@ export default function AccountingFinancialReporting() {
           ],
         },
         {
-          title: '5. Cash Flow Management & Forecasting',
+          title: 'Cash Flow Management & Forecasting',
           items: [
             'Cash flow forecasting and budgeting',
             'Working capital management',
@@ -80,7 +73,7 @@ export default function AccountingFinancialReporting() {
           ],
         },
         {
-          title: '6. Budgeting & Financial Planning',
+          title: 'Budgeting & Financial Planning',
           items: [
             'Annual operating budgets',
             'Capital expenditure budgets',
@@ -92,7 +85,7 @@ export default function AccountingFinancialReporting() {
           ],
         },
         {
-          title: '7. Financial Analysis & Business Performance Reviews',
+          title: 'Financial Analysis & Business Performance Reviews',
           description: 'Profitability, liquidity, solvency and operational performance reviews, including:',
           items: [
             'Gross and net profit analysis',
@@ -101,18 +94,6 @@ export default function AccountingFinancialReporting() {
             'Debt-to-equity and leverage analysis',
             'Revenue growth and cost management assessments',
             'Benchmarking against industry standards',
-          ],
-        },
-        {
-          title: '8. Year-End Accounting & Financial Close',
-          items: [
-            'Year-end reconciliations and general ledger reviews',
-            'Fixed asset verification and depreciation calculations',
-            'Accrual and provision calculations',
-            'Inventory valuations',
-            'Debtor and creditor confirmations',
-            'Tax adjustment calculations',
-            'Audit and independent review preparation',
           ],
         },
         {
